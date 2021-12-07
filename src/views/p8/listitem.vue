@@ -1,38 +1,34 @@
 <template>
   <van-pull-refresh success-text="刷新成功" v-model="isLoading" @refresh="onRefresh">
-    <div
-      ref="fresh"
-      :style="{
-        height: freshHeight + 'px',
-        'overflow-y': 'scroll',
-        'box-sizing': 'border-box'
-      }"
-    >
+    <div ref="fresh" :style="{
+                                height: freshHeight + 'px',
+                                'overflow-y': 'scroll',
+                                'box-sizing': 'border-box'
+                              }">
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
-      <div
-        class="lists_item"
-        :style="{
-          color: item.isDeleted ? '#999999' : ''
-        }"
-        v-for="(item, index) in list"
-        :key="index"
-      >
+      <div class="lists_item" :style="{
+                                  color: item.isDeleted ? '#999999' : ''
+                                }" v-for="(item, index) in list" :key="index">
         <div class="oneLine">
           <div class="operator">供应商:{{ item.partnerName }}</div>
           <div class="add_time">{{ item.isDeleted ? '已作废' : item.auditState }}</div>
         </div>
-        <div
-          class="content"
-          :style="{
-            color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
-            padding: '0 20px'
-          }"
-          style=""
-        > 
-          <div class="item"><span style="margin-right: 3px">采购单号 :</span>{{ item.billNo }}</div>
-          <div class="item"><span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
-          <div class="item"><span style="margin-right: 3px">采购日期 :</span>{{ item.askDateStr }}</div>
-          <div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
+        <div class="content" :style="{
+                                    color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
+                                    padding: '0 20px'
+                                  }" style="">
+          <div class="item" style="display: inline-flex;width: 100%;justify-content: space-between;">
+            <div>
+              <span style="margin-right: 3px">采购单号 :</span>{{ item.billNo }}</div>
+            <div style="font-size:16px">
+              {{ item.readflag }}</div>
+          </div>
+          <div class="item">
+            <span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
+          <div class="item">
+            <span style="margin-right: 3px">采购日期 :</span>{{ item.askDateStr }}</div>
+          <div class="item">
+            <span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
           <div class="item" v-if="item.status == 1">
             <span style="margin-right: 3px">审批人 :</span>{{ item.auditerName }}
           </div>
@@ -84,8 +80,9 @@ export default {
                   dateStr: dayjs(m.date).format('YYYY-MM-DD'),
                   askDateStr: dayjs(m.askDate).format('YYYY-MM-DD'),
                   requiredDateStr: dayjs(m.requiredDate).format('YYYY-MM-DD'),
-                  auditDateStr: dayjs(m.auditDate).format('YYYY-MM-DD HH:mm'),
+                  auditDateStr: dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss'),
                   isDeleted: m.isDeleted == 1,
+                  readflag: m.readflag == '未读' ? '未读' : '已读',
                   allIsOk: data.filter(ff => ff.id == f).every(s => s.quantity <= s.finishQuantity)
                 }
               })
@@ -121,8 +118,7 @@ export default {
   .oneLine {
     font-weight: bold;
     display: flex;
-    justify-content: space-between;
-    // line-height: 30px;
+    justify-content: space-between; // line-height: 30px;
     // height: 25px;
     padding: 10px 20px;
     border-bottom: 0.7px solid #ebebeb;
@@ -140,9 +136,11 @@ export default {
     margin-top: 9px;
   }
 }
+
 .content {
   position: relative;
 }
+
 .detailsInfo {
   position: absolute;
   right: 20px;
@@ -152,6 +150,7 @@ export default {
   background: #1989fa;
   color: #ffffff;
 }
+
 .swipe {
   width: 100%;
   height: 250px;
@@ -160,6 +159,7 @@ export default {
     height: 250px;
   }
 }
+
 .item-list {
   display: flex;
   li {

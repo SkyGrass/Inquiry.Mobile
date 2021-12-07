@@ -65,7 +65,8 @@ export default {
         .then(({ code, data, message }) => {
           if (code == 200) {
             this.list = data.map(m => {
-              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm')
+              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm:ss')
+               m.auditDate = dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
               m.isDeleted = m.isDeleted == 1
               m.description = this.type == 0 ? '您有一份询价等待报价,请填写!' : '您的报价已经提交!'
               return m

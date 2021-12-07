@@ -14,7 +14,7 @@
 
       <van-cell-group>
         <template #title>
-          <span>询价单详情 共：{{ total_partner }}个供应商 共：{{ total }}件</span>
+          <span>询价单详情 共：{{ total_partner }}个供应商</span>
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">
@@ -54,9 +54,9 @@
                   placeholder="请输入说明"
                 />
               </template>
-              <template>
+              <!--<template>
                 <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>
+              </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>

@@ -86,3 +86,11 @@ export function unAudit(data) {
         hideloading: false
     })
 }
+export function partnerConfirmOrder(params) {
+    return request({
+        url: api.PartnerConfirmOrder,
+        method: 'get',
+        params,
+        hideloading: true
+    })
+}

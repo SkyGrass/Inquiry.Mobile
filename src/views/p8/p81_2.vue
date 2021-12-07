@@ -2,10 +2,11 @@
   <div class="root">
     <div class="vcr">
       <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="description" />
+      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：'+readflg" />
       <!-- <van-cell-group title="用户信息">
-        <van-cell title="制单人" :value="userName" />
-        <van-cell title="制单日期" :value="date" />
-      </van-cell-group> -->
+                          <van-cell title="制单人" :value="userName" />
+                          <van-cell title="制单日期" :value="date" />
+                        </van-cell-group> -->
 
       <van-cell-group title="送货信息">
         <van-cell title="申购日期" :value="askDateStr" />
@@ -14,7 +15,7 @@
 
       <van-cell-group>
         <template #title>
-          <span>备货详情 共：{{ total_partner }}个供应商 共：{{ total }}件</span>
+          <span>送货详情 共：{{ total_partner }}个供应商</span>
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">
@@ -28,26 +29,18 @@
                 <van-field v-model="v.count" type="number" label="数量" readonly />
                 <van-field v-model="v.finishCount" type="number" label="已完成" readonly />
                 <!-- <van-field
-                  disabled
-                  :ref="'input_' + i + '_' + a"
-                  :id="'input_' + i + '_' + a"
-                  v-model="v.amount"
-                  type="number"
-                  label="总价"
-                /> -->
-                <van-field
-                  readonly
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                />
+                                    disabled
+                                    :ref="'input_' + i + '_' + a"
+                                    :id="'input_' + i + '_' + a"
+                                    v-model="v.amount"
+                                    type="number"
+                                    label="总价"
+                                  /> -->
+                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
-              <template>
-                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>
+              <!--<template>
+                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                  </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -60,7 +53,7 @@ import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 import { setStorage } from '@/utils/index.js'
-import { getRecord, getPo, del, audit, unAudit } from '@/api/po.js'
+import { getRecord, getPo, del, audit, unAudit, partnerConfirmOrder } from '@/api/po.js'
 import { floatMul } from '@/utils'
 export default {
   mixins: [mounted],
@@ -78,7 +71,8 @@ export default {
       groupId: '',
       askDateStr: '',
       requiredDateStr: '',
-      partnerId: -1
+      partnerId: -1,
+      readflg: '已读'
     }
   },
   asyncComputed: {
@@ -89,10 +83,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -118,6 +112,7 @@ export default {
         return '当前单据等待审批'
       }
     },
+
     id() {
       return this.$route.query.id
     }
@@ -135,6 +130,7 @@ export default {
             this.groupId = data[0].billNo.replace('Po', '')
             this.date = dayjs(data[0].date).format('YYYY-MM-DD')
             this.partnerId = data[0].partnerId
+            this.readflg = data[0].readflag
             this.askDateStr = dayjs(data[0].askDate).format('YYYY-MM-DD')
             this.requiredDateStr = dayjs(data[0].requiredDate).format('YYYY-MM-DD')
             this.invs_p = data.map(m => {
@@ -143,6 +139,8 @@ export default {
               m.amount = floatMul(m.price, m.count).toFixed(2)
               return m
             })
+
+            partnerConfirmOrder({ id, partnerId: this.partnerId })
           } else {
             this.$toast({ type: 'fail', message: '未能查询到订单详情!' })
           }
@@ -150,7 +148,11 @@ export default {
         .catch(() => {
           this.$toast({ type: 'fail', message: '查询订单详情发生错误!' })
         })
+
+
     }
+
+
   }
 }
 </script>

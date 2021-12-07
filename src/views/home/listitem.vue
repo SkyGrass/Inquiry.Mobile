@@ -1,37 +1,29 @@
 <template>
   <van-pull-refresh success-text="刷新成功" v-model="isLoading" @refresh="onRefresh">
-    <div
-      ref="fresh"
-      :style="{
-        height: freshHeight + 'px',
-        'overflow-y': 'scroll',
-        'box-sizing': 'border-box'
-      }"
-    >
+    <div ref="fresh" :style="{
+            height: freshHeight + 'px',
+            'overflow-y': 'scroll',
+            'box-sizing': 'border-box',
+            'padding-bottom': '44px'
+          }">
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
-      <div
-        class="lists_item"
-        :style="{
-          color: item.isDeleted ? '#999999' : ''
-        }"
-        v-for="(item, index) in list"
-        :key="index"
-      >
+      <div class="lists_item" :style="{
+              color: item.isDeleted ? '#999999' : ''
+            }" v-for="(item, index) in list" :key="index">
         <div class="oneLine">
           <div class="operator">申请人:{{ item.billerName }}({{ item.deptName }})</div>
           <div class="add_time">{{ item.isDeleted ? '已作废' : item.auditState }}</div>
         </div>
-        <div
-          class="content"
-          :style="{
-            color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
-            padding: '0 20px'
-          }"
-          style=""
-        >
-          <div class="item"><span style="margin-right: 3px">类型 :</span>{{ item.billTypeName }}</div>
-          <div class="item"><span style="margin-right: 3px">申购单号 :</span>{{ item.billNo }}</div>
-          <div class="item"><span style="margin-right: 3px">申购日期 :</span>{{ item.date }}</div>
+        <div class="content" :style="{
+                color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
+                padding: '0 20px'
+              }" style="">
+          <div class="item">
+            <span style="margin-right: 3px">类型 :</span>{{ item.billTypeName }}</div>
+          <div class="item">
+            <span style="margin-right: 3px">申购单号 :</span>{{ item.billNo }}</div>
+          <div class="item">
+            <span style="margin-right: 3px">申购日期 :</span>{{ item.date }}</div>
           <div @click="onClick('/p11_2', item)" class="detailsInfo">查看详情</div>
         </div>
       </div>
@@ -65,7 +57,7 @@ export default {
           if (code == 200) {
             this.list = data.map(m => {
               m.billTypeName = this.getBillTypeName(m.billType)
-              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm')
+              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm:ss')
               m.isDeleted = m.isDeleted == 1
               return m
             })
@@ -89,7 +81,7 @@ export default {
     this.getList()
   },
   mounted() {
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top - 95
   }
 }
 </script>
@@ -105,8 +97,7 @@ export default {
   .oneLine {
     font-weight: bold;
     display: flex;
-    justify-content: space-between;
-    // line-height: 30px;
+    justify-content: space-between; // line-height: 30px;
     // height: 25px;
     padding: 10px 20px;
     border-bottom: 0.7px solid #ebebeb;
@@ -124,9 +115,11 @@ export default {
     margin-top: 9px;
   }
 }
+
 .content {
   position: relative;
 }
+
 .detailsInfo {
   position: absolute;
   right: 20px;
@@ -136,6 +129,7 @@ export default {
   background: #1989fa;
   color: #ffffff;
 }
+
 .swipe {
   width: 100%;
   height: 250px;
@@ -144,6 +138,7 @@ export default {
     height: 250px;
   }
 }
+
 .item-list {
   display: flex;
   li {

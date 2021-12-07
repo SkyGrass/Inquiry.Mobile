@@ -1,26 +1,15 @@
 <template>
   <div>
     <van-row class="root">
+      <van-search readonly placeholder="请输入搜索关键词" input-align="center" @click="gotoSearch" />
       <van-col span="6" class="left">
         <van-sidebar v-model="activeKey" class="menu" @change="onChangeTab">
-          <van-sidebar-item
-            :id="'_' + c.id"
-            :dot="cls_p.filter(f => f.id == c.id).length > 0"
-            class="item"
-            v-for="c in cls"
-            :key="c.id"
-            :title="c.name"
-          />
+          <van-sidebar-item :id="'_' + c.id" :dot="cls_p.filter(f => f.id == c.id).length > 0" class="item" v-for="c in cls" :key="c.id" :title="c.name" />
         </van-sidebar>
       </van-col>
       <van-col span="18" class="right">
         <van-empty image="search" description="没有查询到存货" v-if="invs.length <= 0" />
-        <div
-          :id="'_' + inv.clsId + '_' + inv.id"
-          class="title van-cell-group__tit1e"
-          v-for="(inv, i) in invs"
-          :key="inv.id"
-        >
+        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.id">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
@@ -31,15 +20,7 @@
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
             </template>
             <template #extra>
-              <van-stepper
-                :disabled="!canUse"
-                @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
-                @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
-                v-model="inv.count"
-                theme="round"
-                min="0"
-                integer
-              />
+              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" integer />
             </template>
           </van-cell>
         </div>
@@ -64,24 +45,15 @@
             <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
           </template>
           <template #extra>
-            <van-stepper
-              @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')"
-              @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')"
-              v-model="v.count"
-              theme="round"
-              min="0"
-              integer
-            />
+            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" integer />
           </template>
         </van-cell>
       </van-cell-group>
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
         <van-col span="20">
-          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small"
-            >清空购物车</van-button
-          ></van-col
-        >
+          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small">清空购物车</van-button>
+        </van-col>
         <van-col span="2"></van-col>
       </van-row>
     </van-popup>
@@ -91,44 +63,67 @@
           <van-list>
             <van-cell @click="onClickPartner(item)" v-for="item in partners_p" :key="item.id" :title="item.name">
               <template #icon>
-                <van-icon
-                  v-if="item.id == curPartnerId"
-                  name="success"
-                  size="24"
-                  :color="item.id == curPartnerId ? 'red' : ''"
-                  class="success-icon"
-                />
+                <van-icon v-if="item.id == curPartnerId" name="success" size="24" :color="item.id == curPartnerId ? 'red' : ''" class="success-icon" />
               </template>
               <template>
                 <van-button @click="onClickRemove(item)" type="warning" size="small">移除</van-button>
               </template>
             </van-cell>
-          </van-list></van-tab
-        >
+          </van-list>
+        </van-tab>
         <van-tab title="供应商列表">
-          <van-search
-            v-model="keyword"
-            placeholder="请输入搜索关键词"
-            show-action
-            @blur="onSearchBlur"
-            @search="onSearch"
-            @cancel="onCancel"
-          />
+          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
-                <van-button
-                  :disabled="item.isChoose"
-                  @click="onClickChoose(item)"
-                  :type="item.isChoose ? '' : 'primary'"
-                  size="small"
-                  >选取</van-button
-                >
+                <van-button :disabled="item.isChoose" @click="onClickChoose(item)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
               </template>
             </van-cell>
           </van-list>
         </van-tab>
       </van-tabs>
+    </van-popup>
+
+    <van-popup v-model="searchVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
+      <van-search show-action v-model="keyword_inv" placeholder="请输入搜索关键词" @blur="onSearchInvBlur" @search="onSearchInv" @cancel="onCancelInv" />
+      <van-empty v-if="!dataList.length > 0" description="没有发现记录"></van-empty>
+      <div class="lists_item">
+        <van-cell v-for="(ele, i) in dataList" :label="'规格:' + ele.specification" :key="i" :title="ele.name" :value="ele.code">
+          <template>
+            <van-button @click="onClickChooseInv(ele)" type="primary" size="small">选取</van-button>
+          </template>
+        </van-cell>
+      </div>
+    </van-popup>
+
+    <van-popup v-model="unitVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '50%' }">
+      <van-form validate-first style="padding: 20px" @submit="onConfirm">
+        <van-field name="name" label="存货">
+          <template #input>
+            <van-field readonly v-model="form.name" />
+          </template>
+        </van-field>
+        <van-field name="unit" label="计量单位">
+          <template #input>
+            <van-radio-group direction="horizontal" v-model="form.unit">
+              <van-radio v-for="unit in curUnits" :key="unit" :name="unit" shape="square">{{ unit }}</van-radio>
+            </van-radio-group>
+          </template>
+        </van-field>
+        <van-field name="count" label="数量">
+          <template #input>
+            <van-stepper v-model="form.count" integer min="1" />
+          </template>
+        </van-field>
+        <van-field name="remark" label="其他说明">
+          <template #input>
+            <van-field type="textarea" rows="1" autosize v-model="form.remark" name="remark" placeholder="请填写其他说明" />
+          </template>
+        </van-field>
+        <div style="margin: 16px">
+          <van-button round block type="info" native-type="submit">确定</van-button>
+        </div>
+      </van-form>
     </van-popup>
   </div>
 </template>
@@ -138,6 +133,7 @@ import { getCls, getInvs, getPartners } from '@/api/home.js'
 import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import { setStorage, getStorage } from '@/utils/index.js'
+import { searchInv } from '@/api/base.js'
 export default {
   name: `p21`,
   mixins: [mounted],
@@ -152,21 +148,32 @@ export default {
       invs_p: [],
       form: [],
       carVisiable: false,
+      searchVisiable: false,
       partnerVisable: false,
+      unitVisiable: false,
       finished: false,
       keyword: '',
       curPartnerId: '',
-      curPartnerName: ''
+      curPartnerName: '',
+      keyword_inv: '',
+      dataList: [],
+      form: {
+        name: '',
+        _name: '',
+        unit: '',
+        count: '',
+        remark: ''
+      }
     }
   },
   asyncComputed: {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -210,6 +217,66 @@ export default {
     }
   },
   methods: {
+    gotoSearch() {
+      this.searchVisiable = true
+    },
+    onSearchInvBlur() {
+      this.onSearchInv(this.keyword_inv)
+    },
+    onSearchInv(val) {
+      if (val != '') {
+        searchInv({ keyword: val })
+          .then(({ code, data, message }) => {
+            if (code == 200) {
+              this.dataList = data
+            } else {
+              this.$dialog.alert({
+                title: '提示',
+                message: '没有查询到存货!'
+              })
+            }
+          })
+          .catch(err => {
+            this.$dialog.alert({
+              title: '提示',
+              message: '查询过程发生异常!'
+            })
+          })
+      }
+    },
+    onCancelInv() {
+      this.dataList = []
+    },
+    onClickChooseInv(inv) {
+      const { idinventoryclass, id } = inv
+      this.searchVisiable = false
+      const index = this.cls.findIndex(f => f.id == idinventoryclass)
+
+      this.keyword_inv = ''
+      this.dataList = []
+      this.onComplete = () => {
+        this.chooseUnit(`x_${idinventoryclass}_${id}_p`, inv)
+        this.onComplete = void 0
+      }
+      if (this.activeKey == index) {
+        this.onComplete()
+      }
+      this.activeKey = index
+    },
+    chooseUnit(name, inv) {
+      const { unitname } = inv
+      this.form.unit = unitname
+      this.form.count = 1
+      this.form.remark = ''
+      this.form.name = inv.name
+      this.form._name = name
+      this.curUnits = [unitname]
+      this.unitVisiable = true
+    },
+    onConfirm(values) {
+      this.onChangeCount(values.count, this.form._name, values.unit, values.remark)
+      this.unitVisiable = false
+    },
     fetchInvs(clsId, index) {
       getInvs({ clsId }).then(({ code, data, message }) => {
         if (code == 200) {
@@ -220,6 +287,7 @@ export default {
             f.count = inv.length > 0 ? inv[0].count : 0
             return f
           })
+          this.onComplete && this.onComplete()
         }
       })
     },
@@ -434,9 +502,9 @@ export default {
   overflow: hidden;
   height: calc(100vh - 105px);
   .left {
-    height: 100%;
+    height: calc(100% - 45px);
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -447,9 +515,9 @@ export default {
     }
   }
   .right {
-    height: 100%;
+    height: calc(100% - 45px);
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .title {

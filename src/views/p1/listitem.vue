@@ -62,7 +62,7 @@ export default {
         .then(({ code, data, message }) => {
           if (code == 200) {
             this.list = data.map(m => {
-              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm')
+              m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm:ss')
               m.isDeleted = m.isDeleted == 1
               return m
             })

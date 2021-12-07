@@ -8,7 +8,7 @@
 
       <van-cell-group>
         <template #title>
-          <span>报价单详情 共：{{ total }}件</span>
+          <span>报价单详情</span>
         </template>
 
         <van-cell :label="v.specification" v-for="(v, a) in invs_p" :key="a">

@@ -351,7 +351,7 @@ export default {
             getAuditInfo({ billType: data[0].billType, billId: data[0].id }).then(({ code, data, message }) => {
               if (code == 200) {
                 this.auditInfo = data.map(m => {
-                  m.auditDate = m.auditDate == null ? '-' : dayjs(m.auditDate).format('YYYY-MM-DD HH:mm')
+                  m.auditDate = m.auditDate == null ? '-' : dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
                   m.auditState = m.flag == -1 ? '等待审批' : m.flag == 1 ? '已通过' : '已拒绝'
                   return m
                 })

@@ -73,7 +73,7 @@ export default {
             this.list = data.map(m => {
               m.dateStr = dayjs(m.date).format('YYYY-MM-DD')
               m.requiredDateStr = dayjs(m.requiredDate).format('YYYY-MM-DD')
-              m.auditDateStr = dayjs(m.auditDate).format('YYYY-MM-DD HH:mm')
+              m.auditDateStr = dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
               m.isDeleted = m.isDeleted == 1
 
               return m
