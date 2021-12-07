@@ -13,12 +13,7 @@
     <van-row class="root">
       <van-col span="24" class="right">
         <van-empty image="search" description="选择供应商和日期查询采购记录" v-if="invs.length <= 0" />
-        <div
-          :id="'_' + inv.clsId + '_' + inv.invId"
-          class="title van-cell-group__tit1e"
-          v-for="(inv, i) in invs"
-          :key="inv.invId"
-        >
+        <div :id="'_' + inv.clsId + '_' + inv.invId" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.invId">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
@@ -30,16 +25,8 @@
               <span class="custom-title">单价:{{ inv.price }}</span>
             </template>
             <template #extra>
-              <van-stepper
-                :disabled="!canUse"
-                @plus="onPlus(i + '_' + inv.clsId + '_' + inv.invId + '_q')"
-                @minus="onMinus(i + '_' + inv.clsId + '_' + inv.invId + '_q')"
-                v-model="inv.count"
-                theme="round"
-                min="0"
-                :max="inv.max"
-                integer
-              />
+              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.invId + '_q')" 
+              @minus="onMinus(i + '_' + inv.clsId + '_' + inv.invId + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
             </template>
           </van-cell>
         </div>
@@ -49,37 +36,17 @@
       <van-goods-action-button type="danger" :disabled="!canSave" text="提交保存" @click="onClickSubmit" />
     </van-goods-action>
     <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
-      <van-datetime-picker
-        :min-date="minDate"
-        @confirm="confirmDate"
-        @cancel="showDate = false"
-        v-model="currentDate"
-        type="date"
-        title="选择年月日"
-      />
+      <van-datetime-picker :min-date="minDate" @confirm="confirmDate" @cancel="showDate = false" v-model="currentDate" type="date" title="选择年月日" />
     </van-popup>
 
     <van-popup v-model="partnerVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-tabs v-model="active">
         <van-tab title="供应商列表">
-          <van-search
-            v-model="keyword"
-            placeholder="请输入搜索关键词"
-            show-action
-            @blur="onSearchBlur"
-            @search="onSearch"
-            @cancel="onCancel"
-          />
+          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
-                <van-button
-                  :disabled="item.isChoose"
-                  @click="onClickChoose(item)"
-                  :type="item.isChoose ? '' : 'primary'"
-                  size="small"
-                  >选取</van-button
-                >
+                <van-button :disabled="item.isChoose" @click="onClickChoose(item)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
               </template>
             </van-cell>
           </van-list>
@@ -114,7 +81,7 @@ export default {
       minDate: new Date(),
       currentDate: new Date(),
       showDate: false,
-      cache: {}
+      cache: []
     }
   },
   asyncComputed: {
@@ -224,7 +191,7 @@ export default {
                   c += t
                     .filter(f => f.invId == m.invId)
                     .map(f => f.count)
-                    .reduce(function (prev, next, index, array) {
+                    .reduce(function(prev, next, index, array) {
                       return prev + next
                     })
                 }
@@ -277,10 +244,13 @@ export default {
             this.$set(this.invs, i, ttt)
           }
         }
-        let cache = this.cache.filter(f => f.id == invId)[0]
-        cache.cur += value
-        let cacheIdex = this.cache.findIndex(f => f.id == invId)
-        this.$set(this.cache, cacheIdex, cache)
+        let cache = this.cache.filter(f => f.id == invId)
+        if (cache.length > 0) {
+          cache = cache[0]
+          cache.cur += value
+          let cacheIdex = this.cache.findIndex(f => f.id == invId)
+          this.$set(this.cache, cacheIdex, cache)
+        }
       }
     },
     onPlus(name) {
@@ -435,6 +405,7 @@ export default {
 .partner {
   margin-top: 44px;
 }
+
 .root {
   position: absolute;
   left: 0;
@@ -446,7 +417,7 @@ export default {
   .left {
     height: 100%;
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -459,7 +430,7 @@ export default {
   .right {
     height: 100%;
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .title {

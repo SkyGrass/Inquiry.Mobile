@@ -25,20 +25,20 @@ export default {
   },
   methods: {
     goToDetails({ path, item }) {
-      setStorage('tab_p41', this.active)
+      setStorage('tab_p51', this.active)
       this.$router.push({ path: path, query: { id: item.id, partnerId: item.partnerId, group: item.group } })
     }
   },
   created() {},
   mounted() {
-    const index = getStorage('tab_p41')
+    const index = getStorage('tab_p51')
     if (index != null) {
       this.active = index
     }
   },
   beforeRouteLeave(to, from, next) {
     if (to.path == '/home') {
-      setStorage('tab_p41', null)
+      setStorage('tab_p51', null)
     }
     next()
   }

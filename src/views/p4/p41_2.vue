@@ -44,9 +44,9 @@
                   placeholder="请输入说明"
                 /> -->
               </template>
-              <template>
+              <!--<template>
                 <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>
+              </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
