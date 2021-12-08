@@ -17,30 +17,12 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <van-field
-              disabled
-              :ref="'input_' + '_' + v.id"
-              :id="'input_' + '_' + v.id"
-              v-model="v.priceCurrent"
-              type="number"
-              label="本期报价"
-              autocomplete="off"
-            />
-            <van-field
-              :disabled="haveStatus"
-              :ref="'input_' + '_' + v.id"
-              :id="'input_' + '_' + v.id"
-              v-model="v.priceCurrentConfirm"
-              type="number"
-              label="确认报价"
-              autocomplete="off"
-              @blur="onBlur(v, a)"
-              @focus="onFocus(v, a)"
-            />
+            <van-field disabled :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
+            <van-field :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
           </template>
-          <template>
+          <!--<template>
             <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-          </template>
+          </template>-->
         </van-cell>
       </van-cell-group>
 
@@ -72,10 +54,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -112,7 +94,12 @@ export default {
               })
             } else {
               this.haveStatus = data[0].status == 1
-              this.invs_p = data
+              this.invs_p = data.map(m => {
+                if (m.status == 0) {
+                  m.priceCurrentConfirm = m.priceCurrent
+                }
+                return m;
+              })
 
               if (this.haveStatus == 0) {
                 confirm(
@@ -181,7 +168,7 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       } else {
         this.$toast({ type: 'fail', message: '发现异常价格，请核实!' })
       }
@@ -195,7 +182,7 @@ export default {
           title: '提示',
           message: '未能查询到报价单,禁止操作!'
         })
-        .then(() => {})
+        .then(() => { })
     }
     this.partnerId = this.$route.query.partnerId
   }

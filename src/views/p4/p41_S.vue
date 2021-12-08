@@ -37,7 +37,6 @@
                 v-model="inv.count"
                 theme="round"
                 min="0"
-                integer
                 :max="inv.max"
               />
             </template>
@@ -79,7 +78,6 @@
               theme="round"
               min="0"
               :max="v.max"
-              integer
             />
           </template>
         </van-cell>

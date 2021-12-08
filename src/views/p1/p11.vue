@@ -76,7 +76,6 @@
               @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p', v)"
               v-model="v.count"
               theme="round"
-              integer
               min="0"
             />
           </template>
@@ -134,7 +133,7 @@
         </van-field>
         <van-field name="count" label="数量">
           <template #input>
-            <van-stepper v-model="form.count" integer min="1" />
+            <van-stepper v-model="form.count" min="1" />
           </template>
         </van-field>
         <van-field name="remark" label="其他说明">

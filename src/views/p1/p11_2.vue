@@ -16,22 +16,14 @@
           <span>申购详情</span>
         </template>
         <van-cell-group :title="c.clsName" v-for="(c, i) in cars" :key="i">
-          <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a">
+          <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a" :title-class="titleCls">
             <template #title>
               <span class="custom-title">{{ v.name }}</span>
               <van-tag type="danger">{{ v.unitname }}</van-tag>
             </template>
             <template #label>
               <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
-              <van-field
-                v-model="v.remark"
-                disabled
-                rows="1"
-                autosize
-                label="其他说明"
-                type="textarea"
-                placeholder="请输入说明"
-              />
+              <van-field v-model="v.remark" disabled rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
             </template>
             <template>
               <span>{{ v.count }}{{ v._unitname }}</span>
@@ -41,45 +33,22 @@
       </van-cell-group>
 
       <van-cell-group title="审批信息" v-if="!isDeleted">
-        <van-cell
-          v-for="(info, index) in auditInfo"
-          :key="index"
-          :title="'审批人:' + info.userName"
-          :value="info.auditState"
-        >
+        <van-cell v-for="(info, index) in auditInfo" :key="index" :title="'审批人:' + info.userName" :value="info.auditState">
           <template #label v-if="info.flag > -1">
             <span class="custom-title">审批时间:{{ info.auditDate }}</span>
-            <van-field
-              v-model="info.remark"
-              :disabled="info.flag > -1"
-              rows="1"
-              autosize
-              label="备注"
-              type="textarea"
-              :placeholder="info.flag > -1 ? info.remark : '请输入说明'"
-            />
+            <van-field v-model="info.remark" :disabled="info.flag > -1" rows="1" autosize label="备注" type="textarea" :placeholder="info.flag > -1 ? info.remark : '请输入说明'" />
           </template>
         </van-cell>
       </van-cell-group>
 
       <div style="margin: 16px">
         <van-button v-if="!isDeleted && noAudit && isMy" round block type="danger" @click="del">作废</van-button>
-        <van-button style="margin: 5px" v-if="myAuditDone" round block type="warning" @click="unAudit"
-          >反审批</van-button
-        >
+        <van-button style="margin: 5px" v-if="myAuditDone" round block type="warning" @click="unAudit">反审批</van-button>
         <van-button style="margin: 5px" v-if="waitMyAudit" round block type="warning" @click="modify">调整</van-button>
         <van-button style="margin: 5px" v-if="waitMyAudit" round block type="primary" @click="audit">审批</van-button>
       </div>
 
-      <van-action-sheet
-        v-model="showAudit"
-        title="请选择"
-        :actions="actions"
-        cancel-text="取消"
-        close-on-click-action
-        @select="doAudit"
-        @cancel="showAudit = false"
-      />
+      <van-action-sheet v-model="showAudit" title="请选择" :actions="actions" cancel-text="取消" close-on-click-action @select="doAudit" @cancel="showAudit = false" />
 
       <van-dialog v-model="showDialog" title="留言" show-cancel-button @confirm="post">
         <van-field v-model="message" rows="2" autosize type="textarea" placeholder="请输入说明或者拒绝原因" />
@@ -116,7 +85,8 @@ export default {
         { key: 2, name: '拒绝', color: '#ee0a24' },
         { key: 1, name: '通过' }
       ],
-      isMy: false
+      isMy: false,
+      titleCls: 'titleCls'
     }
   },
   asyncComputed: {
@@ -124,10 +94,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -211,7 +181,7 @@ export default {
             query: { id: this.id }
           })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     unAudit() {
       this.$dialog
@@ -233,9 +203,9 @@ export default {
                   }
                 })
             })
-            .catch(err => {})
+            .catch(err => { })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     audit() {
       this.showAudit = true
@@ -267,7 +237,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     doAudit(val) {
       const { key } = val
@@ -288,7 +258,7 @@ export default {
               }
             })
         })
-        .catch(err => {})
+        .catch(err => { })
     },
     submit() {
       this.$dialog
@@ -327,7 +297,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   },
   mounted() {
@@ -384,5 +354,9 @@ export default {
     height: 100%;
     overflow: scroll;
   }
+}
+
+.titleCls {
+  flex: 5
 }
 </style>

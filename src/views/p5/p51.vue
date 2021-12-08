@@ -13,7 +13,7 @@
     <van-row class="root">
       <van-col span="24" class="right">
         <van-empty image="search" description="选择供应商和日期查询采购记录" v-if="invs.length <= 0" />
-        <div :id="'_' + inv.clsId + '_' + inv.invId" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.invId">
+        <div :id="'_' + inv.clsId + '_' + inv.invId" class="title van-cell-group__tit1e" v-for="(inv, i) in invs_p" :key="inv.invId">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>

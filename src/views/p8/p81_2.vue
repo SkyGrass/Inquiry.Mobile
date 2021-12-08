@@ -15,7 +15,7 @@
 
       <van-cell-group>
         <template #title>
-          <span>送货详情 共：{{ total_partner }}个供应商</span>
+          <span>订单详情</span>
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">

@@ -20,7 +20,7 @@
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
             </template>
             <template #extra>
-              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" integer />
+              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" />
             </template>
           </van-cell>
         </div>
@@ -45,7 +45,7 @@
             <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
           </template>
           <template #extra>
-            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" integer />
+            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" />
           </template>
         </van-cell>
       </van-cell-group>
@@ -112,7 +112,7 @@
         </van-field>
         <van-field name="count" label="数量">
           <template #input>
-            <van-stepper v-model="form.count" integer min="1" />
+            <van-stepper v-model="form.count" min="1" />
           </template>
         </van-field>
         <van-field name="remark" label="其他说明">

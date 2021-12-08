@@ -31,7 +31,7 @@
                   <p class="custom-title">总价:{{ calc(p.price, p.count) }}</p>
                 </template>
                 <template #extra>
-                  <van-stepper :disabled="p.price == 0" @plus="onPlus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" @minus="onMinus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" v-model="p.count" theme="round" min="0" :max="inv.count" integer />
+                  <van-stepper :disabled="p.price == 0" @blur="obBlur(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" @plus="onPlus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" @minus="onMinus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" v-model="p.count" theme="round" min="0" :max="inv.count" />
                 </template>
               </van-cell>
             </template>
@@ -58,7 +58,7 @@
             <span class="custom-title">单价:{{ v.price }}</span>
           </template>
           <template #extra>
-            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" :max="v.max" integer />
+            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" :max="v.max" />
           </template>
         </van-cell>
       </van-cell-group>
@@ -107,7 +107,7 @@ import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import { setStorage, getStorage } from '@/utils/index.js'
 import dayjs from 'dayjs'
-import { floatMul } from '@/utils'
+import { floatMul, floatSub, floatAdd } from '@/utils'
 export default {
   name: `p41`,
   mixins: [mounted],
@@ -330,7 +330,7 @@ export default {
         }
       }
     },
-    onPlus1(name) {
+    obBlur(name) {
       const index = name.split('_')[0]
       const index1 = name.split('_')[1]
       if (this.invs[index].partners.length == 2) {
@@ -338,8 +338,21 @@ export default {
         const _index1 = index1 == 0 ? 1 : 0
 
 
-        this.invs[_index].partners[_index1].count =
-          this.invs[_index].count - this.invs[index].partners[index1].count - 1
+        this.invs[_index].partners[_index1].count = floatSub(
+          this.invs[_index].count, this.invs[index].partners[index1].count)
+
+      }
+    },
+    onPlus1(name) {
+      const index = name.split('_')[0]
+      const index1 = name.split('_')[1]
+      if (this.invs[index].partners.length == 2) {
+        const _index = index
+        const _index1 = index1 == 0 ? 1 : 0
+        console.log(floatSub(2.0, 1.5))
+
+        this.invs[_index].partners[_index1].count = floatSub(floatSub(
+          this.invs[_index].count, this.invs[index].partners[index1].count), 1)
 
       }
     },
@@ -350,8 +363,8 @@ export default {
         const _index = index
         const _index1 = index1 == 0 ? 1 : 0
 
-        this.invs[_index].partners[_index1].count =
-          this.invs[_index].count - this.invs[index].partners[index1].count + 1
+        this.invs[_index].partners[_index1].count = floatAdd(floatSub(
+          this.invs[_index].count, this.invs[index].partners[index1].count), 1)
       }
     },
     onPlus(name) {
@@ -511,7 +524,16 @@ export default {
         }
       })
 
-      return t.some(f => f.count != f.max) || t.some(f => f.count == 0) || t1.some(f => f.price == 0)
+      let t2 = this.invs.map(m => {
+        return {
+          prices: m.partners
+            .map(f => { return { price: f.price, count: f.count } })
+        }
+      })
+      return t.some(f => f.count != f.max) ||
+        t.some(f => f.count == 0) ||
+        t1.some(f => f.price == 0) ||
+        t2.some(f => f.prices.filter(p => p.price == 0 && p.count > 0).length > 0)
     },
     onClickSubmit() {
       if (this.beforeSave()) {

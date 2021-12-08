@@ -15,21 +15,14 @@
           <span>申购详情 </span>
         </template>
         <van-cell-group :title="c.clsName" v-for="(c, i) in cars" :key="i">
-          <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a">
+          <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a" :title-class='titleCls'>
             <template #title>
               <span class="custom-title">{{ v.name }}</span>
               <van-tag type="danger">{{ v.unitname }}</van-tag>
             </template>
             <template #label>
               <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
-              <van-field
-                v-model="v.remark"
-                rows="1"
-                autosize
-                label="其他说明"
-                type="textarea"
-                placeholder="请输入说明"
-              />
+              <van-field v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
             </template>
             <template>
               <span>{{ v.count }}{{ v._unit }}</span>
@@ -43,23 +36,10 @@
       </div>
     </div>
     <van-popup v-model="showDept" round position="bottom" :style="{ height: '40%' }">
-      <van-picker
-        show-toolbar
-        @confirm="confirmDept"
-        value-key="name"
-        title="选择部门"
-        :columns="depts"
-        :default-index="currentDeptIndex"
-      />
+      <van-picker show-toolbar @confirm="confirmDept" value-key="name" title="选择部门" :columns="depts" :default-index="currentDeptIndex" />
     </van-popup>
     <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
-      <van-datetime-picker
-        :min-date="minDate"
-        @confirm="confirmDate"
-        v-model="currentDate"
-        type="date"
-        title="选择年月日"
-      />
+      <van-datetime-picker :min-date="minDate" @confirm="confirmDate" v-model="currentDate" type="date" title="选择年月日" />
     </van-popup>
   </div>
 </template>
@@ -88,7 +68,8 @@ export default {
       minDate: new Date(),
       invs_p: [],
       depts: [],
-      forbidden: false
+      forbidden: false,
+      titleCls: 'titleCls'
     }
   },
   asyncComputed: {
@@ -99,10 +80,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -218,7 +199,7 @@ export default {
               })
           }
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   },
   mounted() {
@@ -277,5 +258,9 @@ export default {
     height: 100%;
     overflow: scroll;
   }
+}
+
+.titleCls {
+  flex: 5
 }
 </style>
