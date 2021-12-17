@@ -13,32 +13,20 @@
     <van-row class="root">
       <van-col span="24" class="right">
         <van-empty image="search" description="选择供应商和日期查询申请记录" v-if="invs.length <= 0" />
-        <div
-          :id="'_' + inv.clsId + '_' + inv.id"
-          class="title van-cell-group__tit1e"
-          v-for="(inv, i) in invs"
-          :key="inv.id"
-        >
+        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="i">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
               <span class="custom-title">{{ inv.name }}</span>
               <van-tag type="danger" style="margin-left: 5px">{{ inv.unitname }}</van-tag>
+              <van-tag type="danger" style="margin-left:4px">{{inv.deptName }}</van-tag>
             </template>
             <template #label>
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
               <span class="custom-title">单价:{{ inv.price }}</span>
             </template>
             <template #extra>
-              <van-stepper
-                :disabled="!canUse"
-                @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
-                @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
-                v-model="inv.count"
-                theme="round"
-                min="0"
-                :max="inv.max"
-              />
+              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
             </template>
           </van-cell>
         </div>
@@ -49,14 +37,7 @@
       <van-goods-action-button type="danger" :disabled="!canSave" text="提交保存" @click="onClickSubmit" />
     </van-goods-action>
     <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
-      <van-datetime-picker
-        :min-date="minDate"
-        @confirm="confirmDate"
-        @cancel="showDate = false"
-        v-model="currentDate"
-        type="date"
-        title="选择年月日"
-      />
+      <van-datetime-picker :min-date="minDate" @confirm="confirmDate" @cancel="showDate = false" v-model="currentDate" type="date" title="选择年月日" />
     </van-popup>
     <van-popup v-model="carVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-empty image="search" description="购物车内没有东西" v-if="cars && cars.length <= 0" />
@@ -65,54 +46,33 @@
           <template #title>
             <span class="custom-title">{{ v.name }}</span>
             <van-tag type="danger" style="margin-left: 5px">{{ v.unitname }}</van-tag>
+            <van-tag type="danger" style="margin-left:4px">{{v.deptName }}</van-tag>
           </template>
           <template #label>
             <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
             <span class="custom-title">单价:{{ v.price }}</span>
           </template>
           <template #extra>
-            <van-stepper
-              @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')"
-              @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')"
-              v-model="v.count"
-              theme="round"
-              min="0"
-              :max="v.max"
-            />
+            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" :max="v.max" />
           </template>
         </van-cell>
       </van-cell-group>
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
         <van-col span="20">
-          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small"
-            >清空购物车</van-button
-          ></van-col
-        >
+          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small">清空购物车</van-button>
+        </van-col>
         <van-col span="2"></van-col>
       </van-row>
     </van-popup>
     <van-popup v-model="partnerVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-tabs v-model="active">
         <van-tab title="供应商列表">
-          <van-search
-            v-model="keyword"
-            placeholder="请输入搜索关键词"
-            show-action
-            @blur="onSearchBlur"
-            @search="onSearch"
-            @cancel="onCancel"
-          />
+          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
-                <van-button
-                  :disabled="item.isChoose"
-                  @click="onClickChoose(item)"
-                  :type="item.isChoose ? '' : 'primary'"
-                  size="small"
-                  >选取</van-button
-                >
+                <van-button :disabled="item.isChoose" @click="onClickChoose(item)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
               </template>
             </van-cell>
           </van-list>
@@ -155,10 +115,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -277,7 +237,7 @@ export default {
                   c += t
                     .filter(f => f.id == m.id)
                     .map(f => f.count)
-                    .reduce(function (prev, next, index, array) {
+                    .reduce(function(prev, next, index, array) {
                       return prev + next
                     })
                 }
@@ -504,6 +464,7 @@ export default {
 .partner {
   margin-top: 44px;
 }
+
 .root {
   position: absolute;
   left: 0;
@@ -515,7 +476,7 @@ export default {
   .left {
     height: 100%;
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -528,7 +489,7 @@ export default {
   .right {
     height: 100%;
     overflow: scroll;
-    ::-webkit-scrollbar {
+     ::-webkit-scrollbar {
       display: none;
     }
     .title {

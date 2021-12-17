@@ -22,29 +22,20 @@
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
               </template>
               <template #label>
-                <van-field v-model="v.price" type="number" label="单价" disabled />
-                <van-field v-model="v.max" type="number" label="要求数量" disabled />
-                <van-field v-model="v.count" type="number" label="实际数量" disabled />
-                <van-field
-                  readonly
-                  :ref="'input_' + i + '_' + a"
-                  :id="'input_' + i + '_' + a"
-                  v-model="v.amount"
-                  type="number"
-                  label="总价"
-                />
-                <van-field
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                />
+                <van-field v-model="v.price" type="number" label="单价" readonly />
+                <van-field v-model="v.max" type="number" label="要求数量" readonly />
+                <van-field v-model="v.count" type="number" label="实际数量" readonly />
+                <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
+                <van-field label="缺货">
+                  <template #input>
+                    <van-checkbox disabled v-model="v.isDiff" shape="square" />
+                  </template>
+                </van-field>
+                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
               <!--<template>
-                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>-->
+                                                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                                              </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -56,13 +47,7 @@
       </div>
 
       <van-popup v-model="showDateVisiable" round position="bottom" :style="{ height: '40%' }">
-        <van-datetime-picker
-          @confirm="showDateVisiable = false"
-          @cancel="showDateVisiable = false"
-          v-model="curDate"
-          type="date"
-          title="选择年月日"
-        />
+        <van-datetime-picker @confirm="showDateVisiable = false" @cancel="showDateVisiable = false" v-model="curDate" type="date" title="选择年月日" />
       </van-popup>
     </div>
   </div>
@@ -97,10 +82,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count || f.quantity)
-            .reduce(function (prev, next, index, array) {
-              return Number(prev) + Number(next)
-            })
+          .map(f => f.count || f.quantity)
+          .reduce(function(prev, next, index, array) {
+            return Number(prev) + Number(next)
+          })
         : 0
     },
     async cars() {
@@ -129,13 +114,17 @@ export default {
               .filter(f => f.partnerId == g)
               .map(m => {
                 return {
+                  deptId: m.deptId,
+                  orderId: m.id,
+                  orderEntryId: m.orderEntryId,
                   invId: m.invId,
                   price: m.price,
                   quantity: m.max,
                   factQuantity: m.count,
                   remark: m.remark,
                   partnerId: m.partnerId,
-                  partnerName: m.partnerName
+                  partnerName: m.partnerName,
+                  isDiff: m.isDiff
                 }
               })
           }
@@ -186,7 +175,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     beforeSave() {
       if (this.invs_p.map(m => m.amount).some(s => Number(s) <= 0)) {
@@ -215,11 +204,15 @@ export default {
                 },
                 signEntry: this.invs_p.map(m => {
                   return {
+                    deptId: m.deptId,
+                    orderId: m.id,
+                    orderEntryId: m.orderEntryId,
                     invId: m.invId,
                     price: m.price,
                     quantity: m.max,
                     factQuantity: m.count,
-                    remark: m.remark
+                    remark: m.remark,
+                    isDiff: m.isDiff
                   }
                 }),
                 context: this.context
@@ -262,11 +255,15 @@ export default {
                 },
                 signEntry: this.invs_p.map(m => {
                   return {
+                    deptId: m.deptId,
+                    orderId: m.id,
+                    orderEntryId: m.orderEntryId,
                     invId: m.invId,
                     price: m.price,
                     quantity: m.max,
                     factQuantity: m.count,
-                    remark: m.remark
+                    remark: m.remark,
+                    isDiff: m.isDiff
                   }
                 }),
                 context: this.context
@@ -299,7 +296,7 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     }
   },

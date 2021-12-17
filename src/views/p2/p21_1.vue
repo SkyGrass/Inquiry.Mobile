@@ -25,29 +25,13 @@
               <template #label>
                 <van-field v-model="v.priceLast" type="number" label="上期报价" readonly />
                 <van-field v-model="v.priceLastConfirm" type="number" label="上期定价" readonly />
-                <van-field
-                  :ref="'input_' + i + '_' + a"
-                  :id="'input_' + i + '_' + a"
-                  v-model="v.priceMarket"
-                  type="number"
-                  label="市场价"
-                  autocomplete="off"
-                  @blur="onBlur(v, c.partnerId, v.id)"
-                  @focus="onGetPrice(v, c.partnerId, v.id)"
-                />
+                <number-input :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.priceMarket" type="number" label="市场价" :min="1" autocomplete="off" @blur="onBlur(v, c.partnerId, v.id)" @focus="onGetPrice(v, c.partnerId, v.id)" />
                 <!-- <van-field v-model="v.priceCurrent" type="number" label="供应商报价" disabled /> -->
-                <van-field
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                />
+                <van-field v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
               <!--<template>
-                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>-->
+                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                  </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -73,9 +57,13 @@ import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 import { setStorage, getStorage } from '@/utils/index.js'
 import { getXj, check, save, modify, del } from '@/api/xj.js'
+import NumberInput from '@/components/NumberInput'
 export default {
   mixins: [mounted],
   name: `p21_1`,
+  components: {
+    NumberInput
+  },
   data() {
     return {
       id: -1,
@@ -104,10 +92,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -199,7 +187,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     beforeSave() {
       if (this.invs_p.map(m => m.priceMarket).some(s => Number(s) <= 0)) {
@@ -317,7 +305,7 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     }
   },

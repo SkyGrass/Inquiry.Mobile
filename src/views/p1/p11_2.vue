@@ -19,11 +19,11 @@
           <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a" :title-class="titleCls">
             <template #title>
               <span class="custom-title">{{ v.name }}</span>
-              <van-tag type="danger">{{ v.unitname }}</van-tag>
+              <!--<van-tag type="danger">{{ v.unitname }}</van-tag>-->
             </template>
             <template #label>
-              <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
-              <van-field v-model="v.remark" disabled rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
+              <van-field label="规格" v-model="v.specification"></van-field>
+              <van-field v-model="v.remark" readonly rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
             </template>
             <template>
               <span>{{ v.count }}{{ v._unitname }}</span>
@@ -33,19 +33,19 @@
       </van-cell-group>
 
       <van-cell-group title="审批信息" v-if="!isDeleted">
-        <van-cell v-for="(info, index) in auditInfo" :key="index" :title="'审批人:' + info.userName" :value="info.auditState">
+        <van-cell v-for="(info, index) in auditInfo" :key="index" :title="'审批人:' + info.userName" :value="info.auditState" :title-class="titleCls">
           <template #label v-if="info.flag > -1">
-            <span class="custom-title">审批时间:{{ info.auditDate }}</span>
-            <van-field v-model="info.remark" :disabled="info.flag > -1" rows="1" autosize label="备注" type="textarea" :placeholder="info.flag > -1 ? info.remark : '请输入说明'" />
+            <van-field label="审批时间" v-model="info.auditDate"></van-field>
+            <van-field v-model="info.remark" :readonly="info.flag > -1" rows="1" autosize label="备注" type="textarea" :placeholder="info.flag > -1 ? info.remark : '请输入说明'" />
           </template>
         </van-cell>
       </van-cell-group>
 
       <div style="margin: 16px">
-        <van-button v-if="!isDeleted && noAudit && isMy" round block type="danger" @click="del">作废</van-button>
-        <van-button style="margin: 5px" v-if="myAuditDone" round block type="warning" @click="unAudit">反审批</van-button>
-        <van-button style="margin: 5px" v-if="waitMyAudit" round block type="warning" @click="modify">调整</van-button>
-        <van-button style="margin: 5px" v-if="waitMyAudit" round block type="primary" @click="audit">审批</van-button>
+        <van-button v-if="!isDeleted && isMy" round block type="danger" @click="del">作废</van-button>
+        <van-button style="margin: 5px" v-if="myAuditDone && needAudit" round block type="warning" @click="unAudit">反审批</van-button>
+        <van-button style="margin: 5px" v-if="waitMyAudit && needAudit" round block type="warning" @click="modify">调整</van-button>
+        <van-button style="margin: 5px" v-if="waitMyAudit && needAudit" round block type="primary" @click="audit">审批</van-button>
       </div>
 
       <van-action-sheet v-model="showAudit" title="请选择" :actions="actions" cancel-text="取消" close-on-click-action @select="doAudit" @cancel="showAudit = false" />
@@ -60,7 +60,7 @@
 import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
-import { setStorage, getStorage } from '@/utils/index.js'
+import { setStorage, getStorage, groupBy } from '@/utils/index.js'
 import { getSub, del } from '@/api/sg.js'
 import { getAuditInfo, auditBill, unAuditBill } from '@/api/home.js'
 
@@ -86,7 +86,8 @@ export default {
         { key: 1, name: '通过' }
       ],
       isMy: false,
-      titleCls: 'titleCls'
+      titleCls: 'titleCls',
+      needAudit: true
     }
   },
   asyncComputed: {
@@ -118,10 +119,10 @@ export default {
       return this.auditInfo.filter(f => f.flag > -1).length <= 0
     },
     async waitMyAudit() {
-      return this.auditInfo.filter(f => f.userGuid == this.userId && f.flag == -1).length > 0
+      return this.auditInfo.filter(f => f.userGuid.split(',').filter(ff => ff == this.userId).length > 0 && f.flag == -1).length > 0
     },
     async myAuditDone() {
-      return this.auditInfo.filter(f => f.userGuid == this.userId && f.flag == 1).length > 0
+      return this.auditInfo.filter(f => f.userGuid.split(',').filter(ff => ff == this.userId).length > 0 && f.flag == 1).length > 0
     },
     async waitAudit() {
       return (
@@ -136,6 +137,7 @@ export default {
       if (this.isDeleted) {
         return '当前申请已作废'
       } else {
+
         if (this.noAudit) {
           return '当前申请等待审批'
         } else if (this.waitAudit) {
@@ -143,6 +145,15 @@ export default {
         } else if (this.haveAudit) {
           return '当前申请已审批'
         }
+
+      }
+    },
+    async level() {
+      const t = this.auditInfo.filter(f => f.userGuid.split(',').filter(ff => ff == this.userId).length > 0);
+      if (t.length > 0) {
+        return t[0].no
+      } else {
+        return -1;
       }
     }
   },
@@ -245,7 +256,7 @@ export default {
       this.showDialog = true
     },
     post() {
-      auditBill({ billType: this.type, billId: this.id, flag: this.flag, remark: this.message })
+      auditBill({ billType: this.type, billId: this.id, flag: this.flag, remark: this.message, no: this.level })
         .then(({ code, data, message }) => {
           this.$dialog
             .alert({
@@ -313,6 +324,7 @@ export default {
             this.type = data[0].billType
             this.isMy = data[0].createdByUserGuid == this.userId
             this.date = dayjs(data[0].date).format('YYYY-MM-DD')
+            this.needAudit = data[0].needAudit
             this.invs_p = data.map(m => {
               m.count = m.quantity
               return m
@@ -320,15 +332,27 @@ export default {
 
             getAuditInfo({ billType: data[0].billType, billId: data[0].id }).then(({ code, data, message }) => {
               if (code == 200) {
-                this.auditInfo = data.map(m => {
-                  m.auditDate = m.auditDate == null ? '-' : dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
-                  m.auditState = m.flag == -1 ? '等待审批' : m.flag == 1 ? '已通过' : '已拒绝'
-                  return m
-                })
-                // this.waitAudit = data.filter(f => f.userGuid == this.userId && f.flag == -1).length > 0
-                //this.haveAudit = data.filter(f => f.flag > -1).length > 0
+                let nt = groupBy(data, 'no');
+                this.auditInfo = (nt.map(ele => {
+                  return {
+                    no: ele[0]['no'],
+                    flag: ele.every(e => e.flag == -1) ? -1 : ele.filter(e => e.flag > -1)[0].flag,
+                    auditDate: ele.every(e => e.flag == -1) ? '-' : dayjs(ele.filter(e => e.flag > -1)[0].auditDate).format('YYYY-MM-DD HH:mm:ss'),
+                    auditState: ele.every(e => e.flag == -1) ? '等待审批' : ele.some(e => e.flag == 1) ?
+                      (ele.filter(e => e.flag == 1)[0].userName) + '已通过' : (ele.filter(e => e.flag == 2)[0].userName) + '已拒绝',
+                    userName: ele.map(e => e.userName).join(' 或 '),
+                    userGuid: ele.map(e => e.userGuid).join(','),
+                    remark: ele[0].remark
+                  }
+                }))
+                // this.auditInfo = data.map(m => {
+                //   m.auditDate = m.auditDate == null ? '-' : dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
+                //   m.auditState = m.flag == -1 ? '等待审批' : m.flag == 1 ? '已通过' : '已拒绝'
+                //   return m
+                // })
               }
             })
+
           } else {
             this.$toast({ type: 'fail', message: '未能查询到订单详情!' })
           }
@@ -357,6 +381,6 @@ export default {
 }
 
 .titleCls {
-  flex: 5
+  flex: 4
 }
 </style>

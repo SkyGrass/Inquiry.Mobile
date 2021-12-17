@@ -34,6 +34,14 @@ export function getPoList(params) {
         params,
         hideloading: true
     })
+} 
+export function getPoBillNoList(params) {
+    return request({
+        url: api.PoBillNoList,
+        method: 'get',
+        params,
+        hideloading: true
+    })
 }
 export function save(data) {
     return request({

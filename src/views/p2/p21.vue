@@ -20,7 +20,7 @@
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
             </template>
             <template #extra>
-              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" />
+              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
             </template>
           </van-cell>
         </div>
@@ -33,21 +33,27 @@
     </van-goods-action>
 
     <van-popup v-model="carVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
+      <van-notice-bar v-if="cars && cars.length > 0" left-icon="volume-o" text="向右滑动条目快速删除" />
       <van-empty image="search" description="购物车内没有东西" v-if="cars && cars.length <= 0" />
       <van-cell-group :title="c.clsName" v-for="(c, i) in cars" :key="i">
-        <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a">
-          <template #title>
-            <span class="custom-title">{{ v.name }}</span>
-            <van-tag type="danger">{{ v.unitname }}</van-tag>
+        <van-swipe-cell :before-close="beforeClose" :name="c.clsId+'_'+v.id" v-for="(v, a) in c.invs" :key="a">
+          <van-cell :label="v.specification">
+            <template #title>
+              <span class="custom-title">{{ v.name }}</span>
+              <van-tag type="danger">{{ v.unitname }}</van-tag>
+            </template>
+            <template #label>
+              <p>{{ v.partnerName }}</p>
+              <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
+            </template>
+            <template #extra>
+              <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" />
+            </template>
+          </van-cell>
+          <template #left>
+            <van-button square text="删除" type="danger" class="delete-button" />
           </template>
-          <template #label>
-            <p>{{ v.partnerName }}</p>
-            <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
-          </template>
-          <template #extra>
-            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" />
-          </template>
-        </van-cell>
+        </van-swipe-cell>
       </van-cell-group>
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
@@ -285,6 +291,7 @@ export default {
             f.clsName = this.cls[index].name
             f.clsId = this.cls[index].id
             f.count = inv.length > 0 ? inv[0].count : 0
+            f.max = 1
             return f
           })
           this.onComplete && this.onComplete()
@@ -430,6 +437,33 @@ export default {
         setStorage(this.groupId + '_shopCar_P21', JSON.stringify(tmp))
         setStorage(this.groupId + '_shopCar_P21_Dic', JSON.stringify(dic))
         this.$router.push({ path: '/p21_1', query: { group: this.groupId, id: this.id } })
+      }
+    }
+    ,
+    beforeClose({ name, position, instance }) {
+      switch (position) {
+        case 'left':
+          const clsId = name.split('_')[0]
+          const invId = name.split('_')[1]
+          const index = this.invs_p.findIndex(f => f.clsId == clsId && f.id == invId);
+          if (index > -1) {
+            this.invs_p.splice(index, 1)
+
+            const _index = this.invs.findIndex(f => f.id == invId);
+            let _t = this.invs.filter(f => f.id == invId)[0];
+            if (_t != void 0) {
+              _t.count = 0
+              if (_index > -1) {
+                this.$set(this.invs, _index, _t)
+              }
+            }
+
+          }
+          instance.close();
+          break;
+        default:
+          instance.close();
+          break;
       }
     }
   },

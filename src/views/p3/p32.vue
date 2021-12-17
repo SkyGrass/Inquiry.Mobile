@@ -17,17 +17,9 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <van-field
-              :disabled="haveStatus"
-              :ref="'input_' + '_' + v.id"
-              :id="'input_' + '_' + v.id"
-              v-model="v.priceCurrent"
-              type="number"
-              label="本期报价"
-              autocomplete="off"
-              @blur="onBlur(v, a)"
-              @focus="onFocus(v, a)"
-            />
+            <div>
+              <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            </div>
           </template>
           <template>
             <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -42,22 +34,8 @@
       <van-popup v-model="show" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
         <van-tabs>
           <van-tab title="请先登录">
-            <van-field
-              v-model="form.username"
-              name="username"
-              label="用户名"
-              placeholder="用户名"
-              autocomplete="off"
-              :rules="[{ required: true, message: '请填写用户名' }]"
-            />
-            <van-field
-              v-model="form.password"
-              type="password"
-              name="password"
-              label="密码"
-              placeholder="密码"
-              :rules="[{ required: true, message: '请填写密码' }]"
-            />
+            <van-field v-model="form.username" name="username" label="用户名" placeholder="用户名" autocomplete="off" :rules="[{ required: true, message: '请填写用户名' }]" />
+            <van-field v-model="form.password" type="password" name="password" label="密码" placeholder="密码" :rules="[{ required: true, message: '请填写密码' }]" />
             <div style="margin: 16px">
               <van-button round block type="info" @click="onLogin">登录</van-button>
             </div>
@@ -74,9 +52,13 @@ import { login, getUserInfo } from '@/api/user.js'
 import { setToken } from '@/utils/index.js'
 import { mapActions } from 'vuex'
 import dayjs from 'dayjs'
+import NumberInput from '@/components/NumberInput'
 export default {
   mixins: [mounted],
   name: `p32`,
+  components: {
+    NumberInput
+  },
   data() {
     return {
       haveStatus: true,
@@ -98,10 +80,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -206,7 +188,7 @@ export default {
                       title: '提示',
                       message: message
                     })
-                    .then(() => {})
+                    .then(() => { })
                 })
                 .catch(err => {
                   this.$dialog.alert({
@@ -216,7 +198,7 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       } else {
         this.$toast({ type: 'fail', message: '发现异常价格，请核实!' })
       }
@@ -250,7 +232,7 @@ export default {
           title: '提示',
           message: '未能查询到报价单,禁止操作!'
         })
-        .then(() => {})
+        .then(() => { })
     } else {
       getUserInfo()
         .then(({ code, data, message }) => {

@@ -13,16 +13,17 @@
     <van-row class="root">
       <van-col span="24" class="right">
         <van-empty image="search" description="选择大类和日期查询申请记录" v-if="invs.length <= 0" />
-        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.id">
+        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="i">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
               <span class="custom-title">{{ inv.name }}</span>
               <van-tag type="danger" style="margin-left: 5px">{{ inv.unitname }}</van-tag>
               <van-tag type="danger" style="margin-left: 5px">总计：{{ inv.count }}</van-tag>
+              <van-tag type="danger" style="margin-left: 5px">{{ inv.deptName }}</van-tag>
             </template>
             <template #label>
-              <van-cell v-for="(p, pi) in inv.partners" :key="p.partnerId">
+              <van-cell v-for="(p, pi) in inv.partners" :key="pi">
                 <template #title>
                   <span class="custom-title">{{ p.partnerName }}</span>
                 </template>
@@ -348,8 +349,7 @@ export default {
       const index1 = name.split('_')[1]
       if (this.invs[index].partners.length == 2) {
         const _index = index
-        const _index1 = index1 == 0 ? 1 : 0
-        console.log(floatSub(2.0, 1.5))
+        const _index1 = index1 == 0 ? 1 : 0 
 
         this.invs[_index].partners[_index1].count = floatSub(floatSub(
           this.invs[_index].count, this.invs[index].partners[index1].count), 1)
@@ -460,7 +460,7 @@ export default {
       Promise.all(ps).then(values => {
         values.forEach(({ data }) => {
           data.forEach(row => {
-            if (this.invs.findIndex(f => f.id == row.id) < 0) {
+            if (this.invs.findIndex(f => f.id == row.id && f.deptId == row.deptId) < 0) {
               this.invs.push(
                 Object.assign({}, row, {
                   partners: [
@@ -475,7 +475,7 @@ export default {
               )
             } else {
               this.invs
-                .filter(f => f.id == row.id)[0]
+                .filter(f => f.id == row.id && f.deptId == row.deptId)[0]
                 .partners.push({
                   price: row.price,
                   count: 0,

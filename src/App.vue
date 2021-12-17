@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       index: 0,
-      hideLeftPath: ['/', '/home', '/list', '/about', '/bind', '/p32'],
+      hideLeftPath: ['/', '/home', '/list', '/about', '/bind', '/p32', '/p51_3'],
       showRightPath: ['/p10', '/p20', '/p40', '/p50'],
       rightIcon: ['plus', 'plus', 'plus', 'plus'],
       duration: { enter: 300, leave: 1000 },

@@ -21,26 +21,20 @@
               <template #title>
                 <span class="custom-title">{{ v.name }}</span>
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
+                <van-tag type="danger" style="margin-left:4px">{{ v.deptName }}</van-tag>
               </template>
               <template #label>
-                <van-field v-model="v.price" type="number" label="单价" readonly />
-                <van-field v-model="v.count" type="number" label="数量" readonly />
-                <van-field
-                  readonly
-                  :ref="'input_' + i + '_' + a"
-                  :id="'input_' + i + '_' + a"
-                  v-model="v.amount"
-                  type="number"
-                  label="总价"
-                />
+                <number-input :min="1" v-model="v.price" type="number" label="单价" readonly autocomplete='off' />
+                <number-input :min="1" v-model="v.count" type="number" label="数量" readonly autocomplete='off' />
+                <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
                 <!-- <van-field
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                /> -->
+                        v-model="v.remark"
+                        rows="1"
+                        autosize
+                        label="其他说明"
+                        type="textarea"
+                        placeholder="请输入说明"
+                      /> -->
               </template>
               <template>
                 <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -56,13 +50,7 @@
       </div>
 
       <van-popup v-model="showDateVisiable" round position="bottom" :style="{ height: '40%' }">
-        <van-datetime-picker
-          @confirm="showDateVisiable = false"
-          @cancel="showDateVisiable = false"
-          v-model="requiredDate"
-          type="date"
-          title="选择年月日"
-        />
+        <van-datetime-picker @confirm="showDateVisiable = false" @cancel="showDateVisiable = false" v-model="requiredDate" type="date" title="选择年月日" />
       </van-popup>
     </div>
   </div>
@@ -74,9 +62,13 @@ import dayjs from 'dayjs'
 import { setStorage, getStorage } from '@/utils/index.js'
 import { getPo, save, modify, del } from '@/api/po.js'
 import { floatMul } from '@/utils'
+import NumberInput from '@/components/NumberInput'
 export default {
   mixins: [mounted],
   name: `p41_1_1`,
+  components: {
+    NumberInput
+  },
   data() {
     return {
       id: -1,
@@ -96,10 +88,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => f.count)
-            .reduce(function (prev, next, index, array) {
-              return Number(prev) + Number(next)
-            })
+          .map(f => f.count)
+          .reduce(function(prev, next, index, array) {
+            return Number(prev) + Number(next)
+          })
         : 0
     },
     async cars() {
@@ -187,7 +179,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     beforeSave() {
       if (this.invs_p.map(m => m.amount).some(s => Number(s) <= 0)) {
@@ -297,13 +289,13 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     }
   },
   mounted() {
     const id = this.$route.query.id
-    
+
     const cacheData = getStorage(this.$route.query.group + '_shopCar_P41')
     if (cacheData != '') {
       if (id) {
@@ -318,7 +310,7 @@ export default {
           .catch(() => {
             this.$toast({ type: 'fail', message: '查询订单详情发生错误!' })
           })
- 
+
       }
       this.invs_p = JSON.parse(cacheData).map(m => {
         m.remark = m.remark || ''

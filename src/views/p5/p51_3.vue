@@ -8,13 +8,13 @@
       </van-cell-group>
 
       <van-cell-group title="送货信息">
-        <van-cell title="申购日期" :value="askDateStr" />
-        <van-cell title="送货日期" :value="requiredDateStr" />
+        <van-cell title="要求送货日期" :value="dateStr" />
+        <van-cell title="实际送货日期" :value="requiredDateStr" />
       </van-cell-group>
 
       <van-cell-group>
         <template #title>
-          <span>采购单详情</span>
+          <span>订单详情</span>
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">
@@ -22,49 +22,24 @@
               <template #title>
                 <span class="custom-title">{{ v.name }}</span>
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
-                <van-tag type="danger" style="margin-left:4px">{{ v.deptName }}</van-tag>
               </template>
               <template #label>
-                <van-field v-model="v.price" type="number" label="单价" readonly />
-                <van-field v-model="v.count" type="number" label="数量" readonly />
-                <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
-                <!-- <van-field
-                      readonly
-                      v-model="v.remark"
-                      rows="1"
-                      autosize
-                      label="其他说明"
-                      type="textarea"
-                      placeholder="请输入说明"
-                    /> -->
+                <van-field v-model="v.max" type="number" label="要求数量" readonly />
+                <van-field v-model="v.count" type="number" label="实际数量" readonly />
+                <van-field label="缺货">
+                  <template #input>
+                    <van-checkbox disabled v-model="v.isDiff" shape="square" />
+                  </template>
+                </van-field>
+                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
-              <!--<template>
-                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-                  </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
       </van-cell-group>
 
-      <div style="margin: 16px">
-        <van-row gutter="10">
-          <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block type="danger" @click="del">作废</van-button>
-          </van-col>
-          <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block @click="change">修改</van-button>
-          </van-col>
-
-          <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block type="primary" @click="doAudit">审批</van-button>
-          </van-col>
-
-          <van-col span="8">
-            <van-button v-if="!isDeleted && haveAudit" block type="danger" @click="doUnAudit">反审批</van-button>
-          </van-col>
-        </van-row>
-      </div>
     </div>
+  </div>
   </div>
 </template>
 <script>
@@ -72,11 +47,11 @@ import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 import { setStorage } from '@/utils/index.js'
-import { getRecord, getPo, del, audit, unAudit } from '@/api/po.js'
+import { getRecord, getSign, del, audit, unAudit } from '@/api/sign.js'
 import { floatMul } from '@/utils'
 export default {
   mixins: [mounted],
-  name: `p41_2`,
+  name: `p51_3`,
   data() {
     return {
       id: -1,
@@ -88,9 +63,11 @@ export default {
       message: '',
       activeNames: ['0'],
       groupId: '',
-      askDateStr: '',
+      dateStr: '',
       requiredDateStr: '',
-      partnerId: -1
+      partnerId: -1,
+      poId: -1,
+      titleCls: 'titleCls',
     }
   },
   asyncComputed: {
@@ -145,19 +122,10 @@ export default {
             t1 = t1.concat(row.entry)
             setStorage(row.name, JSON.stringify(row.entry))
           })
-          setStorage(this.groupId + '_shopCar_P41_Dic', JSON.stringify(t))
-          setStorage(this.groupId + '_shopCar_P41', JSON.stringify(t1))
-          setStorage(this.groupId + '_shopCar_P41_RequiredDate', this.askDateStr)
-          this.$router.push({
-            path: '/p41_S',
-            query: {
-              id: this.id,
-              askDate: this.askDateStr,
-              requiredDate: this.requiredDateStr,
-              partnerId: this.partnerId,
-              group: this.groupId
-            }
-          })
+          setStorage(this.groupId + '_shopCar_P51_Dic', JSON.stringify(t))
+          setStorage(this.groupId + '_shopCar_P51', JSON.stringify(t1))
+          setStorage(this.groupId + '_shopCar_P51_RequiredDate', this.requiredDateStr)
+          this.$router.push({ path: '/p51', query: { id: this.id, partnerId: this.partnerId, group: this.groupId } })
         }
       })
     },
@@ -171,7 +139,8 @@ export default {
           audit({
             id: this.id,
             userId: this.billerId,
-            date: this.askDateStr
+            poId: this.poId,
+            partnerId: this.partnerId
           })
             .then(({ code, data, message }) => {
               this.$dialog
@@ -202,7 +171,7 @@ export default {
           unAudit({
             id: this.id,
             userId: this.billerId,
-            date: this.askDateStr
+            poId: this.poId
           })
             .then(({ code, data, message }) => {
               this.$dialog
@@ -256,7 +225,7 @@ export default {
   mounted() {
     const id = this.$route.query.id
     if (id) {
-      getPo({ id })
+      getSign({ id })
         .then(({ code, data, message }) => {
           if (code == 200) {
             this.userName = data[0].billerName
@@ -265,10 +234,12 @@ export default {
             this.groupId = data[0].billNo.replace('Po', '')
             this.date = dayjs(data[0].date).format('YYYY-MM-DD')
             this.partnerId = data[0].partnerId
-            this.askDateStr = dayjs(data[0].askDate).format('YYYY-MM-DD')
+            this.poId = data[0].poBillId
+            this.dateStr = dayjs(data[0].date).format('YYYY-MM-DD')
             this.requiredDateStr = dayjs(data[0].requiredDate).format('YYYY-MM-DD')
             this.invs_p = data.map(m => {
-              m.count = m.quantity
+              m.max = m.quantity
+              m.count = m.factQuantity
               m.amount = floatMul(m.price, m.count).toFixed(2)
               return m
             })
@@ -297,5 +268,9 @@ export default {
     height: 100%;
     overflow: scroll;
   }
+}
+
+.titleCls {
+  flex: 4
 }
 </style>

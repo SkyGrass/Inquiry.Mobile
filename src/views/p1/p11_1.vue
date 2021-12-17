@@ -8,6 +8,14 @@
 
       <van-cell-group title="表单信息">
         <van-cell title="申购日期" :value="date" @click="chooseDate" :is-link="!forbidden" />
+
+        <van-cell title="审批">
+          <template>
+            <div style="float:right">
+              <van-checkbox v-model="needAudit" shape="square" />
+            </div>
+          </template>
+        </van-cell>
       </van-cell-group>
 
       <van-cell-group>
@@ -18,7 +26,7 @@
           <van-cell :label="v.specification" v-for="(v, a) in c.invs" :key="a" :title-class='titleCls'>
             <template #title>
               <span class="custom-title">{{ v.name }}</span>
-              <van-tag type="danger">{{ v.unitname }}</van-tag>
+              <!--<van-tag type="danger">{{ v.unitname }}</van-tag>-->
             </template>
             <template #label>
               <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -69,7 +77,8 @@ export default {
       invs_p: [],
       depts: [],
       forbidden: false,
-      titleCls: 'titleCls'
+      titleCls: 'titleCls',
+      needAudit: true
     }
   },
   asyncComputed: {
@@ -165,7 +174,7 @@ export default {
               })
           } else {
             save({
-              subscribe: { date: this.date, deptId: this.currentDeptId, billerId: this.currentBillerId },
+              subscribe: { date: this.date, deptId: this.currentDeptId, billerId: this.currentBillerId, needAudit: this.needAudit },
               subscribeEntry: this.invs_p.map(m => {
                 return {
                   invId: m.id,

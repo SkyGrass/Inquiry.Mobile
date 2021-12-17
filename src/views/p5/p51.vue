@@ -7,27 +7,41 @@
     </van-row>
     <van-row class="date">
       <van-col span="24">
-        <van-cell title="请选择到货日期" is-link :value="currentDateStr" @click="chooseDate"></van-cell>
+        <van-cell title="请选择采购订单" is-link :value="currentOrderBillNo" @click="chooseOrder"></van-cell>
+      </van-col>
+    </van-row>
+    <van-row class="date">
+      <van-col span="24">
+        <van-cell title="到货日期" :value="currentDateStr"></van-cell>
       </van-col>
     </van-row>
     <van-row class="root">
       <van-col span="24" class="right">
         <van-empty image="search" description="选择供应商和日期查询采购记录" v-if="invs.length <= 0" />
-        <div :id="'_' + inv.clsId + '_' + inv.invId" class="title van-cell-group__tit1e" v-for="(inv, i) in invs_p" :key="inv.invId">
+        <div :id="'_' + inv.clsId + '_' + inv.invId" class="title van-cell-group__tit1e" v-for="(inv, i) in invs_p" :key="i">
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
               <span class="custom-title">{{ inv.name }}</span>
               <van-tag type="danger" style="margin-left: 5px">{{ inv.unitname }}</van-tag>
+              <van-tag type="danger" style="margin-left: 5px">{{ inv.deptName }}</van-tag>
             </template>
             <template #label>
-              <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
-              <span class="custom-title">单价:{{ inv.price }}</span>
+              <!--<p class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</p>-->
+
+              <van-field v-model="inv.price" type="number" label="单价" readonly/>
+              <number-input v-model="inv.count" :max="inv.max" label="数量" />
+              <van-field label="缺货">
+                <template #input>
+                  <van-checkbox v-model="inv.isDiff" shape="square" />
+                </template>
+              </van-field>
+              <van-field clearable :disabled="!inv.isDiff" v-model="inv.remark" rows="1" autosize label="说明" type="textarea" placeholder="请输入缺货说明" />
             </template>
-            <template #extra>
-              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.invId + '_q')" 
-              @minus="onMinus(i + '_' + inv.clsId + '_' + inv.invId + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
-            </template>
+            <!-- <template #extra>
+                      <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.invId + '_' + inv.deptId + '_q')" 
+                                                        @minus="onMinus(i + '_' + inv.clsId + '_' + inv.invId+ '_' + inv.deptId  + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
+                                                </template>-->
           </van-cell>
         </div>
       </van-col>
@@ -35,8 +49,9 @@
     <van-goods-action>
       <van-goods-action-button type="danger" :disabled="!canSave" text="提交保存" @click="onClickSubmit" />
     </van-goods-action>
-    <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
-      <van-datetime-picker :min-date="minDate" @confirm="confirmDate" @cancel="showDate = false" v-model="currentDate" type="date" title="选择年月日" />
+
+    <van-popup v-model="showOrder" round position="bottom" :style="{ height: '40%' }">
+      <van-picker show-toolbar title="采购订单" @cancel="showOrder = false" @confirm="onConfirmBillNo" :columns="billNoList" :default-index="0" />
     </van-popup>
 
     <van-popup v-model="partnerVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
@@ -58,14 +73,19 @@
 
 <script>
 import { getPartners } from '@/api/home.js'
+import { getPoBillNoList } from '@/api/po.js'
 import { getSignDetail } from '@/api/sign.js'
 import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
-import { setStorage, getStorage } from '@/utils/index.js'
+import { setStorage, getStorage, copyObj } from '@/utils/index.js'
 import dayjs from 'dayjs'
+import NumberInput from '@/components/NumberInput'
 export default {
   name: `p51`,
   mixins: [mounted],
+  components: {
+    NumberInput
+  },
   data() {
     return {
       partners: [],
@@ -79,9 +99,10 @@ export default {
       curPartnerId: '',
       curPartnerName: '',
       minDate: new Date(),
-      currentDate: new Date(),
-      showDate: false,
-      cache: []
+      currentDateStr: "",
+      currentOrderBillNo: "",
+      showOrder: false,
+      billNos: [],
     }
   },
   asyncComputed: {
@@ -97,32 +118,31 @@ export default {
     async id() {
       return this.$route.query.id || void 0
     },
-    async currentDateStr() {
-      return dayjs(this.currentDate).format('YYYY-MM-DD')
+    async billNoList() {
+      //return this.billNos.map(m => `${m.billNo}(${m.requiredDate})`);
+      return this.billNos.map(m => `${m.billNo}`);
     }
   },
   watch: {
     curPartnerId() {
       this.onClickClear()
-      this.getDetail()
+      //this.getDetail()
+      this.getOrderBillNo();
     }
   },
   methods: {
-    chooseDate() {
-      this.showDate = true
+    chooseOrder() {
+      if (this.curPartnerId == '') {
+        this.$toast({ type: 'fail', message: '请先选择供应商!' })
+      } else {
+        this.showOrder = true
+      }
     },
-    confirmDate() {
-      this.showDate = false
-      this.$dialog
-        .confirm({
-          title: '提示',
-          message: '切换日期将重置数据,是否继续?'
-        })
-        .then(() => {
-          this.clearCache(() => {
-            this.getDetail()
-          })
-        })
+    onConfirmBillNo(value, index) {
+      this.currentOrderBillNo = this.billNos[index].billNo
+      this.currentDateStr = this.billNos[index].requiredDate
+      this.showOrder = false
+      this.getDetail(this.billNos[index].id)
     },
     clearCache(success) {
       this.partners_p.forEach(({ id }) => {
@@ -132,10 +152,29 @@ export default {
       setStorage(this.groupId + '_shopCar_P51_Dic', '')
       success && success()
     },
-    getDetail() {
+    getOrderBillNo() {
+      if (this.curPartnerId == '') {
+        this.$toast({ type: 'fail', message: '请先选择供应商!' })
+      }
+      else {
+        getPoBillNoList({ partnerId: this.curPartnerId }).then(({ code, message, data }) => {
+          this.billNos = data.map(m => {
+            m.requiredDate = dayjs(m.requiredDate).format("YYYY-MM-DD")
+            return m;
+          })
+          if (data.length > 0) {
+            this.currentDateStr = data[0].requiredDate
+            this.currentOrderBillNo = data[0].billNo
+
+            this.getDetail(data[0].id)
+          }
+        })
+      }
+    },
+    getDetail(orderId) {
       if (this.curPartnerId == '') return
       this.invs = []
-      getSignDetail({ date: this.currentDateStr, partnerId: this.curPartnerId }).then(({ code, message, data }) => {
+      getSignDetail({ orderId }).then(({ code, message, data }) => {
         if (code == 200) {
           if (this.curPartnerId == '') {
             this.$toast({ type: 'fail', message: '请先选择供应商' })
@@ -147,62 +186,41 @@ export default {
               return m
             })
           }
-
-          this.invs = JSON.parse(JSON.stringify(data)).map(m => {
+          this.invs = copyObj(data).map(m => {
             m.partnerId = this.curPartnerId
             m.partnerName = this.curPartnerName
             m.price = Number(m.price).toFixed(2)
             m.max = m.count
             if (carInfo1.length > 0) {
-              let t = carInfo1.filter(f => f.invId == m.invId)[0]
+              let t = copyObj(carInfo1).filter(f => f.invId == m.invId && f.deptId == m.deptId)[0]
               if (t) {
                 m.count = t.count
+                m.isDiff = t.isDiff
+                m.remark = t.remark
               } else {
                 m.count = 0
               }
             }
             return m
           })
-          this.invs_p = JSON.parse(JSON.stringify(data)).map(m => {
+          this.invs_p = copyObj(data).map(m => {
             m.partnerId = this.curPartnerId
             m.partnerName = this.curPartnerName
             m.price = Number(m.price).toFixed(2)
             m.max = m.count
             if (carInfo1.length > 0) {
-              let t = carInfo1.filter(f => f.invId == m.invId)[0]
+              let t = copyObj(carInfo1).filter(f => f.invId == m.invId && f.deptId == m.deptId)[0]
               if (t) {
                 m.count = t.count
+                m.isDiff = t.isDiff
+                m.remark = t.remark
               } else {
                 m.count = 0
               }
             }
             return m
           })
-          this.cache = data.map(m => {
-            let c = 0
-            m.max = m.count
-            this.partners_p
-              .filter(f => f.id != this.curPartnerId)
-              .forEach(({ id }) => {
-                let t = getStorage(this.groupId + '_P51_ShopCar_' + id)
-                if (t != '') {
-                  t = JSON.parse(t)
 
-                  c += t
-                    .filter(f => f.invId == m.invId)
-                    .map(f => f.count)
-                    .reduce(function(prev, next, index, array) {
-                      return prev + next
-                    })
-                }
-              })
-
-            return {
-              id: m.invId,
-              max: m.max,
-              cur: this.invs.filter(f => f.invId == m.invId)[0].count + c
-            }
-          })
         }
       })
     },
@@ -210,24 +228,13 @@ export default {
       if (this.curPartnerId == '') {
         return this.$toast({ type: 'fail', message: '请先添加供应商,再添加存货!' })
       } else {
-        const id = name.split('_')[1]
         const invId = name.split('_')[2]
-        const f = name.split('_')[3]
+        const deptId = name.split('_')[3]
+        const f = name.split('_')[4]
 
-        const invIndex = this.invs_p.findIndex(f => f.invId == invId)
-        const inv = this.invs.filter(f => f.invId == invId)[0]
-        if (invIndex < 0) {
-          this.invs_p.push(
-            Object.assign(
-              {},
-              { partnerId: this.curPartnerId, partnerName: this.curPartnerName },
-              { cid: id, id: invId },
-              inv,
-              { count: value }
-            )
-          )
-        } else {
-          const tt = this.invs_p.filter(f => f.invId == invId)[0]
+        const invIndex = this.invs_p.findIndex(f => f.invId == invId && f.deptId == deptId)
+        if (invIndex > -1) {
+          const tt = copyObj(this.invs_p.filter(f => f.invId == invId && f.deptId == deptId)[0])
           tt.count += value
 
           if (tt.count == 0) {
@@ -235,21 +242,6 @@ export default {
           } else {
             this.$set(this.invs_p, invIndex, tt)
           }
-        }
-        if (f == 'p') {
-          let i = this.invs.findIndex(f => f.invId == invId)
-          if (i > -1) {
-            let ttt = this.invs.filter(f => f.invId == invId)[0]
-            ttt.count += value
-            this.$set(this.invs, i, ttt)
-          }
-        }
-        let cache = this.cache.filter(f => f.id == invId)
-        if (cache.length > 0) {
-          cache = cache[0]
-          cache.cur += value
-          let cacheIdex = this.cache.findIndex(f => f.id == invId)
-          this.$set(this.cache, cacheIdex, cache)
         }
       }
     },
@@ -270,46 +262,7 @@ export default {
     onCancel() {
       this.partners = this.partners_copy
     },
-    onClickPartner(partner) {
-      const { id, name } = partner
-      setStorage(this.groupId + '_P51_ShopCar_' + this.curPartnerId, JSON.stringify(this.invs_p))
 
-      this.curPartnerId = id
-      this.curPartnerName = name
-
-      this.invs_p = JSON.parse(
-        getStorage(this.groupId + '_P51_ShopCar_' + id) == null || getStorage(this.groupId + '_P51_ShopCar_' + id) == ''
-          ? '[]'
-          : getStorage(this.groupId + '_P51_ShopCar_' + id)
-      )
-      this.invs.forEach((inv, index) => {
-        let t = this.cache.filter(f => f.invId == inv.id)[0]
-        let t1 = this.invs_p.filter(f => f.invId == inv.id)[0]
-        inv.count = t1 ? t1.count : 0
-        inv.max = t.max - t.cur == 0 ? inv.count : t.max - t.cur + inv.count
-        this.$set(this.invs, index, inv)
-      })
-    },
-    onClickRemove(partner) {
-      const { id } = partner
-      const index = this.partners.findIndex(f => f.id == id)
-      let p = this.partners[index]
-      p.isChoose = false
-      this.$set(this.partners, index, p)
-
-      let cp = this.partners_copy[index]
-      cp.isChoose = false
-      this.$set(this.partners_copy, index, cp)
-      if (p.id == this.curPartnerId) {
-        if (this.partners_p.length > 1) {
-          this.curPartnerId = this.partners_p[0].id
-          this.curPartnerName = this.partners_p[0].name
-        } else {
-          this.curPartnerId = ''
-          this.curPartnerName = ''
-        }
-      }
-    },
     onClickChoose(partner) {
       const { id, name } = partner
       const index = this.partners.findIndex(f => f.id == id)
@@ -341,7 +294,7 @@ export default {
       if (this.invs_p.length <= 0) {
         this.$toast({ type: 'fail', message: '请先添加商品' })
       } else {
-        setStorage(this.groupId + '_P51_ShopCar_' + this.curPartnerId, JSON.stringify(this.invs_p))
+        setStorage(this.groupId + '_P51_ShopCar_' + this.curPartnerId, JSON.stringify(this.invs_p.filter(f => f.count > 0)))
 
         let tmp = [],
           dic = []
@@ -410,7 +363,7 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 140px;
+  top: 170px;
   bottom: 50px;
   overflow: hidden;
   height: calc(100vh - 150px);

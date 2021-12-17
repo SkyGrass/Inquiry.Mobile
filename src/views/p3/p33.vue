@@ -17,12 +17,12 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <van-field disabled :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
-            <van-field :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            <number-input :min="1" disabled :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
+            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
           </template>
           <!--<template>
-            <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-          </template>-->
+              <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+            </template>-->
         </van-cell>
       </van-cell-group>
 
@@ -35,11 +35,14 @@
 <script>
 import { mounted } from '@/mix/mounted.js'
 import { getPartnerAsk, savePac, confirm } from '@/api/xj.js'
-
+import NumberInput from '@/components/NumberInput'
 import dayjs from 'dayjs'
 export default {
   mixins: [mounted],
   name: `p33`,
+  components: {
+    NumberInput
+  },
   data() {
     return {
       haveStatus: true,

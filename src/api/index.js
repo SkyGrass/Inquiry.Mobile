@@ -50,6 +50,7 @@ const api = {
   SavePo: '/v1/bus/po/save',
   SavePoMuilt: '/v1/bus/po/saveMuilt',
   PoList: '/v1/bus/po/list',
+  PoBillNoList: '/v1/bus/po/blist',
   Po: '/v1/bus/po/one',
   ModifyPo: '/v1/bus/po/modify',
   DelPo: '/v1/bus/po/del',

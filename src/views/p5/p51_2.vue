@@ -14,7 +14,7 @@
 
       <van-cell-group>
         <template #title>
-          <span>询价单详情 共：{{ total_partner }}个供应商</span>
+          <span>订单详情</span>
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">
@@ -24,30 +24,20 @@
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
               </template>
               <template #label>
-                <van-field v-model="v.price" type="number" label="单价" disabled />
-                <van-field v-model="v.max" type="number" label="要求数量" disabled />
-                <van-field v-model="v.count" type="number" label="实际数量" disabled />
-                <van-field
-                  readonly
-                  :ref="'input_' + i + '_' + a"
-                  :id="'input_' + i + '_' + a"
-                  v-model="v.amount"
-                  type="number"
-                  label="总价"
-                />
-                <van-field
-                  readonly
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                />
+                <van-field v-model="v.price" type="number" label="单价" readonly />
+                <van-field v-model="v.max" type="number" label="要求数量" readonly />
+                <van-field v-model="v.count" type="number" label="实际数量" readonly />
+                <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
+                <van-field label="缺货">
+                  <template #input>
+                    <van-checkbox disabled v-model="v.isDiff" shape="square" />
+                  </template>
+                </van-field>
+                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
-              <template>
-                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>
+              <!--<template>
+                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                  </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -56,21 +46,19 @@
       <div style="margin: 16px">
         <van-row gutter="10">
           <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block type="danger" @click="del">作废</van-button></van-col
-          >
+            <van-button v-if="!isDeleted && !haveAudit" block type="danger" @click="del">作废</van-button>
+          </van-col>
           <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block @click="change">修改</van-button></van-col
-          >
+            <van-button v-if="!isDeleted && !haveAudit" block @click="change">修改</van-button>
+          </van-col>
 
           <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block type="primary" @click="doAudit">审批</van-button></van-col
-          >
+            <van-button v-if="!isDeleted && !haveAudit" block type="primary" @click="doAudit">审批</van-button>
+          </van-col>
 
           <van-col span="8">
-            <van-button v-if="!isDeleted && haveAudit" block type="danger" @click="doUnAudit"
-              >反审批</van-button
-            ></van-col
-          >
+            <van-button v-if="!isDeleted && haveAudit" block type="danger" @click="doUnAudit">反审批</van-button>
+          </van-col>
         </van-row>
       </div>
     </div>
@@ -100,7 +88,8 @@ export default {
       dateStr: '',
       requiredDateStr: '',
       partnerId: -1,
-      poId: -1
+      poId: -1,
+      titleCls: 'titleCls',
     }
   },
   asyncComputed: {
@@ -111,10 +100,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -172,7 +161,8 @@ export default {
           audit({
             id: this.id,
             userId: this.billerId,
-            poId: this.poId
+            poId: this.poId,
+            partnerId: this.partnerId
           })
             .then(({ code, data, message }) => {
               this.$dialog
@@ -191,7 +181,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     doUnAudit() {
       this.$dialog
@@ -222,7 +212,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     del() {
       this.$dialog
@@ -251,7 +241,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   },
   mounted() {
@@ -300,5 +290,9 @@ export default {
     height: 100%;
     overflow: scroll;
   }
+}
+
+.titleCls {
+  flex: 4
 }
 </style>

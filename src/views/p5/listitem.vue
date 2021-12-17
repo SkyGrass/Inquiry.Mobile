@@ -32,7 +32,7 @@
           <div class="item"><span style="margin-right: 3px">供应商 :</span>{{ item.partnerName }}</div>
           <div class="item"><span style="margin-right: 3px">签收单号 :</span>{{ item.billNo }}</div>
           <div class="item"><span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
-          <div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
+          <!--<div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>-->
           <div class="item" v-if="item.status == 1">
             <span style="margin-right: 3px">审批人 :</span>{{ item.auditerName }}
           </div>

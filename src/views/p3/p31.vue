@@ -17,17 +17,8 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <van-field
-              :disabled="haveStatus"
-              :ref="'input_' + '_' + v.id"
-              :id="'input_' + '_' + v.id"
-              v-model="v.priceCurrent"
-              type="number"
-              label="本期报价"
-              autocomplete="off"
-              @blur="onBlur(v, a)"
-              @focus="onFocus(v, a)"
-            />
+            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="本期确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
           </template>
           <template>
             <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -46,9 +37,13 @@ import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import { getPartnerAsk, savePa, confirm } from '@/api/xj.js'
 import dayjs from 'dayjs'
+import NumberInput from '@/components/NumberInput'
 export default {
   mixins: [mounted],
   name: `p31`,
+  components: {
+    NumberInput
+  },
   data() {
     return {
       haveStatus: true,
@@ -62,10 +57,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -140,7 +135,7 @@ export default {
                 })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       } else {
         this.$toast({ type: 'fail', message: '发现异常价格，请核实!' })
       }
