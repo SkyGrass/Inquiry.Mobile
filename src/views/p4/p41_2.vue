@@ -2,6 +2,7 @@
   <div class="root">
     <div class="vcr">
       <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="description" />
+      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：'+readflg" />
       <van-cell-group title="用户信息">
         <van-cell title="制单人" :value="userName" />
         <van-cell title="制单日期" :value="date" />
@@ -29,18 +30,18 @@
                 <van-field v-model="v.count" type="number" label="数量" readonly />
                 <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
                 <!-- <van-field
-                      readonly
-                      v-model="v.remark"
-                      rows="1"
-                      autosize
-                      label="其他说明"
-                      type="textarea"
-                      placeholder="请输入说明"
-                    /> -->
+                          readonly
+                          v-model="v.remark"
+                          rows="1"
+                          autosize
+                          label="其他说明"
+                          type="textarea"
+                          placeholder="请输入说明"
+                        /> -->
               </template>
               <!--<template>
-                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-                  </template>-->
+                        <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                      </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -90,7 +91,8 @@ export default {
       groupId: '',
       askDateStr: '',
       requiredDateStr: '',
-      partnerId: -1
+      partnerId: -1,
+      readflg: '已读'
     }
   },
   asyncComputed: {
@@ -265,6 +267,8 @@ export default {
             this.groupId = data[0].billNo.replace('Po', '')
             this.date = dayjs(data[0].date).format('YYYY-MM-DD')
             this.partnerId = data[0].partnerId
+
+            this.readflg = data[0].readflag
             this.askDateStr = dayjs(data[0].askDate).format('YYYY-MM-DD')
             this.requiredDateStr = dayjs(data[0].requiredDate).format('YYYY-MM-DD')
             this.invs_p = data.map(m => {

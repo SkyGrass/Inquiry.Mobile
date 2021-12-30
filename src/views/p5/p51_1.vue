@@ -24,7 +24,7 @@
               <template #label>
                 <van-field v-model="v.price" type="number" label="单价" readonly />
                 <van-field v-model="v.max" type="number" label="要求数量" readonly />
-                <van-field v-model="v.count" type="number" label="实际数量" readonly />
+                <van-field v-model="v.count" type="number" label="实际数量" readonly/>
                 <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
                 <van-field label="缺货">
                   <template #input>
@@ -34,8 +34,8 @@
                 <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
               <!--<template>
-                                                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-                                              </template>-->
+                                                  <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                                                </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>

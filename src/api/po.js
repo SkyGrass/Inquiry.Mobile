@@ -2,11 +2,11 @@ import api from './index'
 // axios
 import request from '@/utils/request'
 
-export function getPoDetail(params) {
+export function getPoDetail(data) {
     return request({
         url: api.PoDetail,
-        method: 'get',
-        params,
+        method: 'post',
+        data,
         hideloading: true
     })
 }

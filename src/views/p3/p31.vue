@@ -17,8 +17,8 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
-            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="本期确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            <number-input :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            <number-input v-if="v.showConfirm" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="本期确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
           </template>
           <template>
             <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -110,6 +110,7 @@ export default {
                 this.invs_p.map(m => {
                   return {
                     Id: m.id,
+                    PartnerId: this.partnerId,
                     EntryId: m.entryId,
                     PriceCurrent: m.priceCurrent
                   }
@@ -119,11 +120,13 @@ export default {
                   this.$dialog
                     .alert({
                       title: '提示',
-                      message: message
+                      message: code == 200 ? `提交成功!` : message
                     })
                     .then(() => {
                       if (code == 200) {
-                        this.$router.go(-1)
+                        this.$router.replace({
+                          path:`/p30`
+                        })
                       }
                     })
                 })
@@ -147,9 +150,12 @@ export default {
         if (code == 200) {
           this.startDateStr = dayjs(data[0].startDate).format('YYYY-MM-DD')
           this.endDateStr = dayjs(data[0].endDate).format('YYYY-MM-DD')
-          this.haveStatus = data[0].status == 1
+          this.haveStatus = data[0].status == 1 || data[0].priceCurrentConfirm > 0 //采购录完确认价则不允许编辑
           this.invs_p = data.map(m => {
-            m.priceCurrent = m.isConfirm ? m.priceCurrent : '0.00'
+            if(data[0].status != 1 || Number(m.priceCurrent) <= 0){
+              m.priceCurrent = m.priceLastConfirm
+            }
+            m.showConfirm = Number(m.priceCurrentConfirm) > 0
             return m
           })
 

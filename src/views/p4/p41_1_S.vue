@@ -24,8 +24,8 @@
                 <van-tag type="danger" style="margin-left:4px">{{ v.deptName }}</van-tag>
               </template>
               <template #label>
-                <number-input :min="1" v-model="v.price" type="number" label="单价" readonly autocomplete='off' />
-                <number-input :min="1" v-model="v.count" type="number" label="数量" readonly autocomplete='off' />
+                <number-input  v-model="v.price" type="number" label="单价" readonly autocomplete='off' />
+                <number-input  v-model="v.count" type="number" label="数量" readonly autocomplete='off' />
                 <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
                 <!-- <van-field
                         v-model="v.remark"

@@ -25,7 +25,7 @@
               <template #label>
                 <van-field v-model="v.priceLast" type="number" label="上期报价" readonly />
                 <van-field v-model="v.priceLastConfirm" type="number" label="上期定价" readonly />
-                <number-input :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.priceMarket" type="number" label="市场价" :min="1" autocomplete="off" @blur="onBlur(v, c.partnerId, v.id)" @focus="onGetPrice(v, c.partnerId, v.id)" />
+                <number-input :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.priceMarket" type="number" label="市场价" autocomplete="off" @blur="onBlur(v, c.partnerId, v.id)" @focus="onGetPrice(v, c.partnerId, v.id)" />
                 <!-- <van-field v-model="v.priceCurrent" type="number" label="供应商报价" disabled /> -->
                 <van-field v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>

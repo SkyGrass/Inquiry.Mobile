@@ -47,7 +47,7 @@
             </template>
             <template #label>
               <van-field label="规格" v-model="v.specification" readonly/>
-              <number-input label="数量" type="number" v-model="v.count" :min="1" @blur="changeCount(v)" autocomplete='off' />
+              <number-input label="数量" type="number" v-model="v.count" @blur="changeCount(v)" autocomplete='off' />
               <van-field label="说明" v-model="v.remark" readonly/>
             </template>
             <!--<template #extra>
@@ -90,7 +90,7 @@
             </van-radio-group>
           </template>
         </van-field>
-        <number-input name="count" label="数量" type="number" v-model="form.count" autocomplete='off' :min="1" />
+        <number-input name="count" label="数量" type="number" v-model="form.count" autocomplete='off' />
         <van-field name="remark" label="其他说明" type="textarea" rows="1" autosize v-model="form.remark" placeholder="请填写其他说明" />
         <div style="margin: 16px">
           <van-button round block type="info" native-type="submit">确定</van-button>

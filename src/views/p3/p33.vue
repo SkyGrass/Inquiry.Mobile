@@ -17,12 +17,12 @@
             <van-tag type="danger">{{ v.unitname }}</van-tag>
           </template>
           <template #label>
-            <number-input :min="1" disabled :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
-            <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+            <number-input :min="0" disabled :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
+            <number-input :min="0" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
           </template>
           <!--<template>
-              <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-            </template>-->
+                  <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                </template>-->
         </van-cell>
       </van-cell-group>
 
@@ -131,7 +131,8 @@ export default {
       }
     },
     beforeSave() {
-      return !this.invs_p.map(m => m.priceCurrentConfirm).some(s => Number(s) <= 0)
+      return !this.invs_p.map(m => m.priceCurrentConfirm).some(s => Number(s) <= 0) &&
+      !this.invs_p.map(m => m.priceCurrent).some(s => Number(s) <= 0)
     },
     submit() {
       if (this.beforeSave()) {
@@ -173,7 +174,7 @@ export default {
           })
           .catch(() => { })
       } else {
-        this.$toast({ type: 'fail', message: '发现异常价格，请核实!' })
+        this.$toast({ type: 'fail', message: '供应商报价或者确认价格异常，请核实!' })
       }
     }
   },

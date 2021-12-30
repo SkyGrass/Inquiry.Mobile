@@ -18,7 +18,7 @@
           </template>
           <template #label>
             <div>
-              <number-input :min="1" :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
+              <number-input :disabled="haveStatus" :ref="'input_' + '_' + v.id" :id="'input_' + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" @blur="onBlur(v, a)" @focus="onFocus(v, a)" />
             </div>
           </template>
           <template>
@@ -177,6 +177,7 @@ export default {
                 this.invs_p.map(m => {
                   return {
                     Id: m.id,
+                    PartnerId:this.partnerId,
                     EntryId: m.entryId,
                     PriceCurrent: m.priceCurrent
                   }

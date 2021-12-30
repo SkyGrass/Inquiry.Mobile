@@ -178,7 +178,7 @@ export default {
     }
   },
   watch: {
-    curPartnerId() {
+    curPartnerId() { 
       this.onClickClear()
       this.getDetail()
     }
@@ -217,7 +217,8 @@ export default {
     getDetail() {
       if (this.curPartnerId == '') return
       this.invs = []
-      getPoDetail({ date: this.currentDateStr, partnerId: this.curPartnerId }).then(({ code, message, data }) => {
+ 
+      getPoDetail({ date: this.currentDateStr, partnerId: this.curPartnerId,clsId:this.currentClsId }).then(({ code, message, data }) => {
         if (code == 200) {
           if (this.curPartnerId == '') {
             this.$toast({ type: 'fail', message: '请先选择供应商' })
@@ -454,7 +455,7 @@ export default {
       const ps = this.clsListCopy
         .filter(f => f.idinventoryclass == cls.id)
         .map(m => {
-          return getPoDetail({ date: this.currentDateStr, partnerId: m.idParent })
+          return getPoDetail({ date: this.currentDateStr, partnerId: m.idParent ,clsId:this.currentClsId})
         })
 
       Promise.all(ps).then(values => {

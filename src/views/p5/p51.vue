@@ -30,7 +30,7 @@
               <!--<p class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</p>-->
 
               <van-field v-model="inv.price" type="number" label="单价" readonly/>
-              <number-input v-model="inv.count" :max="inv.max" label="数量" />
+              <number-input v-model="inv.count" label="数量" />
               <van-field label="缺货">
                 <template #input>
                   <van-checkbox v-model="inv.isDiff" shape="square" />

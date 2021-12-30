@@ -18,7 +18,7 @@
         </template>
         <van-collapse v-model="activeNames">
           <van-collapse-item :name="i" :title="c.partnerName" v-for="(c, i) in cars" :key="i">
-            <van-row gutter="10">
+            <van-row gutter="10" v-if="!haveAudit">
               <van-col span="12">
                 <van-button plain type="info" v-if="!isDeleted" block @click="send(c.partnerId)">通知供应商</van-button>
               </van-col>
@@ -34,29 +34,14 @@
               <template #label>
                 <van-field v-model="v.priceLast" type="number" label="上期报价" readonly />
                 <van-field v-model="v.priceLastConfirm" type="number" label="上期定价" readonly />
-                <van-field
-                  readonly
-                  :ref="'input_' + a + '_' + v.id"
-                  :id="'input_' + a + '_' + v.id"
-                  v-model="v.priceMarket"
-                  type="number"
-                  label="市场价"
-                  autocomplete="off"
-                />
-
-                <van-field
-                  readonly
-                  v-model="v.remark"
-                  rows="1"
-                  autosize
-                  label="其他说明"
-                  type="textarea"
-                  placeholder="请输入说明"
-                />
+                <van-field readonly :ref="'input_' + a + '_' + v.id" :id="'input_' + a + '_' + v.id" v-model="v.priceMarket" type="number" label="市场价" autocomplete="off" />
+                <van-field v-if="haveAudit" readonly :ref="'input_' + a + '_' + v.id" :id="'input_' + a + '_' + v.id" v-model="v.priceCurrent" type="number" label="本期报价" autocomplete="off" />
+                <van-field v-if="haveAudit" readonly :ref="'input_' + a + '_' + v.id" :id="'input_' + a + '_' + v.id" v-model="v.priceCurrentConfirm" type="number" label="确认价" autocomplete="off" />
+                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
               <!--<template>
-                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-              </template>-->
+                  <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -65,13 +50,15 @@
       <div style="margin: 16px">
         <van-row gutter="10">
           <van-col span="8">
-            <van-button v-if="!isDeleted && !haveAudit" block type="danger" @click="del">作废</van-button></van-col
-          >
-          <van-col span="8"> <van-button v-if="!haveAudit" block @click="change">调整</van-button></van-col>
+            <van-button v-if="!isDeleted && !haveAudit" block type="danger" @click="del">作废</van-button>
+          </van-col>
+          <van-col span="8">
+            <van-button v-if="!haveAudit" block @click="change">调整</van-button>
+          </van-col>
 
           <van-col span="8">
-            <van-button v-if="!haveAudit" block type="primary" @click="doAudit">审批</van-button></van-col
-          >
+            <van-button v-if="!haveAudit" block type="primary" @click="doAudit">审批</van-button>
+          </van-col>
         </van-row>
       </div>
     </div>
@@ -110,10 +97,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-            .map(f => 1)
-            .reduce(function (prev, next, index, array) {
-              return prev + next
-            })
+          .map(f => 1)
+          .reduce(function(prev, next, index, array) {
+            return prev + next
+          })
         : 0
     },
     async cars() {
@@ -189,7 +176,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     del() {
       this.$dialog
@@ -218,7 +205,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     send(id) {
       this.$dialog
@@ -244,7 +231,7 @@ export default {
               })
             })
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     confirm(id) {
       this.$router.push({
