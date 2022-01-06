@@ -51,7 +51,7 @@ export default {
   right: 0;
   top: 46px;
   bottom: 0px;
-  overflow: hidden;
+  overflow: scroll;
   height: calc(100vh - 46px);
   .lists_item {
     margin-bottom: 5px;

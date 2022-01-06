@@ -30,8 +30,8 @@
                 <van-field v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
               </template>
               <!--<template>
-                    <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
-                  </template>-->
+                                <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
+                              </template>-->
             </van-cell>
           </van-collapse-item>
         </van-collapse>
@@ -74,7 +74,7 @@ export default {
       showEndDate: false,
       date: dayjs(new Date()).format('YYYY-MM-DD'),
       startDate: dayjs(new Date()).add(1, 'month').startOf('month').toDate(),
-      endDate: dayjs(new Date()).add(1, 'month').endOf('month').toDate()
+      endDate: dayjs(new Date()).add(15, 'day').endOf('month').toDate()
     }
   },
   asyncComputed: {
@@ -133,11 +133,15 @@ export default {
     },
     id() {
       return this.$route.query.id
+    },
+    async  curClsId() {
+      return this.invs_p[0]['clsId'];
     }
   },
   methods: {
     onGetPrice(inv, pId, id) {
-      check({ partnerId: inv.partnerId, invId: inv.id }).then(({ code, data, message }) => {
+      const billId = this.$route.query.id == void 0 ? -1 : this.$route.query.id;
+      check({ partnerId: inv.partnerId, invId: inv.id, billId }).then(({ code, data, message }) => {
         if (code == 200) {
           if (data.length > 0) {
             inv.priceLast = Number(data[0]['priceCurrent']).toFixed(2)
@@ -215,7 +219,8 @@ export default {
                   billerId: this.billerId,
                   billNo: this.groupId,
                   startDate: this.startDateStr,
-                  endDate: this.endDateStr
+                  endDate: this.endDateStr,
+                  clsId:this.curClsId
                 },
                 inquiryEntry: this.invs_p.map(m => {
                   return {
@@ -262,7 +267,8 @@ export default {
                   billerId: this.billerId,
                   billNo: this.groupId,
                   startDate: this.startDateStr,
-                  endDate: this.endDateStr
+                  endDate: this.endDateStr,
+                  clsId:this.curClsId
                 },
                 inquiryEntry: this.invs_p.map(m => {
                   return {

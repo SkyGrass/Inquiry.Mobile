@@ -51,8 +51,8 @@
               <van-field label="说明" v-model="v.remark" readonly/>
             </template>
             <!--<template #extra>
-                                                                                                  <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p', v)" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p', v)" v-model="v.count" theme="round" min="0" />
-                                                                                                </template>-->
+                                                                                                          <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p', v)" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p', v)" v-model="v.count" theme="round" min="0" />
+                                                                                                        </template>-->
           </van-cell>
           <template #left>
             <van-button square text="删除" type="danger" class="delete-button" />
@@ -104,7 +104,7 @@
 import { getCls, getInvs } from '@/api/home.js'
 import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
-import { setStorage, getStorage, isEmpty } from '@/utils/index.js'
+import { setStorage, getStorage, isEmpty, floatAdd } from '@/utils/index.js'
 import { searchInv } from '@/api/base.js'
 import NumberInput from '@/components/NumberInput'
 export default {
@@ -141,7 +141,7 @@ export default {
         ? this.invs_p
           .map(f => f.count)
           .reduce(function(prev, next, index, array) {
-            return prev + next
+            return floatAdd(prev, next)
           })
         : 0
     },
@@ -252,7 +252,7 @@ export default {
         if (eq) {
           tt.count = value
         } else {
-          tt.count += value
+          tt.count = floatAdd(tt.count, value)
         }
 
         if (tt.count == 0) {
@@ -268,7 +268,7 @@ export default {
           if (eq) {
             ttt.count = value
           } else {
-            ttt.count += value
+            ttt.count = floatAdd(ttt.count, value)
           }
           ttt._unit = unit
           this.$set(this.invs, i, ttt)

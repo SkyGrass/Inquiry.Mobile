@@ -123,6 +123,14 @@ export default {
           if (code == 200) {
             this.startDateStr = dayjs(data[0].startDate).format('YYYY-MM-DD')
             this.endDateStr = dayjs(data[0].endDate).format('YYYY-MM-DD')
+            this.haveStatus = data[0].status == 1 || data[0].priceCurrentConfirm > 0 //采购录完确认价则不允许编辑
+
+            this.invs_p = data.map(m => {
+              if (data[0].status != 1 || Number(m.priceCurrent) <= 0) {
+                m.priceCurrent = m.priceLastConfirm
+              }
+              return m
+            })
 
             this.isDeleted = data[0].isDeleted == 1
             if (this.isDeleted) {
@@ -131,9 +139,6 @@ export default {
                 message: `当前报价单已经被删除，无法报价!`
               })
             } else {
-              this.haveStatus = data[0].status == 1
-              this.invs_p = data
-
               if (this.haveStatus == 0) {
                 confirm(
                   this.invs_p.map(m => {
@@ -177,7 +182,7 @@ export default {
                 this.invs_p.map(m => {
                   return {
                     Id: m.id,
-                    PartnerId:this.partnerId,
+                    PartnerId: this.partnerId,
                     EntryId: m.entryId,
                     PriceCurrent: m.priceCurrent
                   }

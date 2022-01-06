@@ -422,6 +422,8 @@ export default {
     onClickSubmit() {
       if (this.invs_p.length <= 0) {
         this.$toast({ type: 'fail', message: '请先添加商品' })
+      } else if (this.cls_p.length > 1) {
+        this.$toast({ type: 'fail', message: '不允许跨大类询价!' })
       } else {
         setStorage(this.groupId + '_P21_ShopCar_' + this.curPartnerId, JSON.stringify(this.invs_p))
 

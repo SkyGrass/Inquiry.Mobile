@@ -1,18 +1,14 @@
 <template>
   <div class="wrapper">
-    <div
-      ref="fresh"
-      :style="{
-        height: freshHeight + 'px',
-        'overflow-y': 'scroll',
-        'box-sizing': 'border-box'
-      }"
-    >
+    <div ref="fresh" :style="{ 
+                    'overflow-y': 'scroll',
+                    'box-sizing': 'border-box'
+                  }">
       <van-search show-action v-model="keyword" placeholder="请输入搜索关键词" @search="onSearch" @cancel="onCancel" />
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
 
       <div class="lists_item">
-        <van-cell v-for="(ele, i) in list" :key="i" :title="ele.name" :value="ele.code"></van-cell>
+        <van-cell v-for="(ele, i) in list" :key="i" :title="ele.name" :value="ele.code" />
       </div>
     </div>
   </div>
@@ -79,8 +75,7 @@ export default {
   left: 0;
   right: 0;
   top: 46px;
-  bottom: 0px;
-  overflow: hidden;
+  bottom: 0px; // overflow: hidden;
   height: calc(100vh - 46px);
   .lists_item {
     margin-bottom: 5px;

@@ -1,5 +1,5 @@
 <template>
-    <van-field v-bind="$attrs" :value="value" type="number" @input="inputHandler" autocomplete='off' />
+    <van-field v-bind="$attrs" v-on="$listeners" :value="value" type="number" @input="inputHandler" autocomplete='off' />
 </template>
 <script>
 export default {
