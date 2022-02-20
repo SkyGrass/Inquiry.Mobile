@@ -1,10 +1,25 @@
 <template>
   <div id="app">
-    <van-nav-bar :left-text="canShowLeft ? '返回' : ''" :left-arrow="canShowLeft" :title="title" v-if="canShow" safe-area-inset-top fixed @click-left="onClickLeft" @click-right="onClickRight">
-      <template #right v-if="canShowRight">
-        <van-icon :name="rightIcon[index]" size="18" /> </template>
+    <van-nav-bar
+      :left-text="canShowLeft ? '返回' : ''"
+      :left-arrow="canShowLeft"
+      :title="title"
+      v-if="canShow"
+      safe-area-inset-top
+      fixed
+      @click-left="onClickLeft"
+      @click-right="onClickRight"
+    >
+      <template #right v-if="canShowRight"> <van-icon :name="rightIcon[index]" size="18" /> </template>
     </van-nav-bar>
-    <transition :name="transitionName" :duration="duration" enter-class="van-enter-class" enter-active-class="van-enter-active-class" leave-active-class="van-leave-active-class" leave-to-class="van-leave-to-class">
+    <transition
+      :name="transitionName"
+      :duration="duration"
+      enter-class="van-enter-class"
+      enter-active-class="van-enter-active-class"
+      leave-active-class="van-leave-active-class"
+      leave-to-class="van-leave-to-class"
+    >
       <router-view />
     </transition>
   </div>

@@ -32,7 +32,15 @@
                   <p class="custom-title">总价:{{ calc(p.price, p.count) }}</p>
                 </template>
                 <template #extra>
-                  <van-stepper :disabled="p.price == 0" @blur="obBlur(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" @plus="onPlus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" @minus="onMinus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')" v-model="p.count" theme="round" min="0" :max="inv.count" />
+                  <van-stepper
+                    @blur="obBlur(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')"
+                    @plus="onPlus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')"
+                    @minus="onMinus1(i + '_' + pi + '_' + p.partnerId + '_' + inv.id + '_q')"
+                    v-model="p.count"
+                    theme="round"
+                    min="0"
+                    :max="inv.count"
+                  />
                 </template>
               </van-cell>
             </template>
@@ -44,7 +52,14 @@
       <van-goods-action-button type="danger" :disabled="!canSave" text="提交保存" @click="onClickSubmit" />
     </van-goods-action>
     <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
-      <van-datetime-picker :min-date="minDate" @confirm="confirmDate" @cancel="showDate = false" v-model="currentDate" type="date" title="选择年月日" />
+      <van-datetime-picker
+        :min-date="minDate"
+        @confirm="confirmDate"
+        @cancel="showDate = false"
+        v-model="currentDate"
+        type="date"
+        title="选择年月日"
+      />
     </van-popup>
     <van-popup v-model="carVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-empty image="search" description="购物车内没有东西" v-if="cars && cars.length <= 0" />
@@ -59,14 +74,23 @@
             <span class="custom-title">单价:{{ v.price }}</span>
           </template>
           <template #extra>
-            <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" :max="v.max" />
+            <van-stepper
+              @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')"
+              @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')"
+              v-model="v.count"
+              theme="round"
+              min="0"
+              :max="v.max"
+            />
           </template>
         </van-cell>
       </van-cell-group>
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
         <van-col span="20">
-          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small">清空购物车</van-button>
+          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small"
+            >清空购物车</van-button
+          >
         </van-col>
         <van-col span="2"></van-col>
       </van-row>
@@ -74,11 +98,24 @@
     <van-popup v-model="partnerVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-tabs v-model="active">
         <van-tab title="供应商列表">
-          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
+          <van-search
+            v-model="keyword"
+            placeholder="请输入搜索关键词"
+            show-action
+            @blur="onSearchBlur"
+            @search="onSearch"
+            @cancel="onCancel"
+          />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
-                <van-button :disabled="item.isChoose" @click="onClickChoose(item)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
+                <van-button
+                  :disabled="item.isChoose"
+                  @click="onClickChoose(item)"
+                  :type="item.isChoose ? '' : 'primary'"
+                  size="small"
+                  >选取</van-button
+                >
               </template>
             </van-cell>
           </van-list>
@@ -91,7 +128,13 @@
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="(item, index) in clsList" :key="item.id" :title="item.name">
               <template>
-                <van-button :disabled="item.isChoose" @click="onClickChoosePcls(item, index)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
+                <van-button
+                  :disabled="item.isChoose"
+                  @click="onClickChoosePcls(item, index)"
+                  :type="item.isChoose ? '' : 'primary'"
+                  size="small"
+                  >选取</van-button
+                >
               </template>
             </van-cell>
           </van-list>
@@ -141,10 +184,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-          .map(f => f.count)
-          .reduce(function(prev, next, index, array) {
-            return prev + next
-          })
+            .map(f => f.count)
+            .reduce(function (prev, next, index, array) {
+              return prev + next
+            })
         : 0
     },
     async cars() {
@@ -178,7 +221,7 @@ export default {
     }
   },
   watch: {
-    curPartnerId() { 
+    curPartnerId() {
       this.onClickClear()
       this.getDetail()
     }
@@ -199,10 +242,13 @@ export default {
         })
         .then(() => {
           this.clearCache(() => {
-            this.onClickChoosePcls({
-              name: this.currentCls,
-              id: this.currentClsId
-            }, this.curIndex)
+            this.onClickChoosePcls(
+              {
+                name: this.currentCls,
+                id: this.currentClsId
+              },
+              this.curIndex
+            )
           })
         })
     },
@@ -217,73 +263,75 @@ export default {
     getDetail() {
       if (this.curPartnerId == '') return
       this.invs = []
- 
-      getPoDetail({ date: this.currentDateStr, partnerId: this.curPartnerId,clsId:this.currentClsId }).then(({ code, message, data }) => {
-        if (code == 200) {
-          if (this.curPartnerId == '') {
-            this.$toast({ type: 'fail', message: '请先选择供应商' })
-          }
-          let carInfo1 = getStorage(this.groupId + '_shopCar_P41')
-          if (carInfo1 != '') {
-            carInfo1 = JSON.parse(carInfo1).map(m => {
-              m.count = m.quantity || m.count
-              m.invId = m.invId || m.id
+
+      getPoDetail({ date: this.currentDateStr, partnerId: this.curPartnerId, clsId: this.currentClsId }).then(
+        ({ code, message, data }) => {
+          if (code == 200) {
+            if (this.curPartnerId == '') {
+              this.$toast({ type: 'fail', message: '请先选择供应商' })
+            }
+            let carInfo1 = getStorage(this.groupId + '_shopCar_P41')
+            if (carInfo1 != '') {
+              carInfo1 = JSON.parse(carInfo1).map(m => {
+                m.count = m.quantity || m.count
+                m.invId = m.invId || m.id
+                return m
+              })
+            }
+
+            this.invs = JSON.parse(JSON.stringify(data)).map(m => {
+              m.partnerId = this.curPartnerId
+              m.partnerName = this.curPartnerName
+              m.price = Number(m.price).toFixed(2)
+              m.max = m.count
+              if (carInfo1.length > 0) {
+                let t = carInfo1.filter(f => f.invId == m.id)[0]
+                if (t) {
+                  m.count = t.count
+                }
+              }
               return m
             })
-          }
-
-          this.invs = JSON.parse(JSON.stringify(data)).map(m => {
-            m.partnerId = this.curPartnerId
-            m.partnerName = this.curPartnerName
-            m.price = Number(m.price).toFixed(2)
-            m.max = m.count
-            if (carInfo1.length > 0) {
-              let t = carInfo1.filter(f => f.invId == m.id)[0]
-              if (t) {
-                m.count = t.count
-              }
-            }
-            return m
-          })
-          this.invs_p = JSON.parse(JSON.stringify(data)).map(m => {
-            m.partnerId = this.curPartnerId
-            m.partnerName = this.curPartnerName
-            m.price = Number(m.price).toFixed(2)
-            m.max = m.count
-            if (carInfo1.length > 0) {
-              let t = carInfo1.filter(f => f.invId == m.id)[0]
-              if (t) {
-                m.count = t.count
-              }
-            }
-            return m
-          })
-          this.cache = data.map(m => {
-            let c = 0
-            this.partners_p
-              .filter(f => f.id != this.curPartnerId)
-              .forEach(({ id }) => {
-                let t = getStorage(this.groupId + '_P41_ShopCar_' + id)
-                if (t != '') {
-                  t = JSON.parse(t)
-
-                  c += t
-                    .filter(f => f.id == m.id)
-                    .map(f => f.count)
-                    .reduce(function(prev, next, index, array) {
-                      return prev + next
-                    })
+            this.invs_p = JSON.parse(JSON.stringify(data)).map(m => {
+              m.partnerId = this.curPartnerId
+              m.partnerName = this.curPartnerName
+              m.price = Number(m.price).toFixed(2)
+              m.max = m.count
+              if (carInfo1.length > 0) {
+                let t = carInfo1.filter(f => f.invId == m.id)[0]
+                if (t) {
+                  m.count = t.count
                 }
-              })
+              }
+              return m
+            })
+            this.cache = data.map(m => {
+              let c = 0
+              this.partners_p
+                .filter(f => f.id != this.curPartnerId)
+                .forEach(({ id }) => {
+                  let t = getStorage(this.groupId + '_P41_ShopCar_' + id)
+                  if (t != '') {
+                    t = JSON.parse(t)
 
-            return {
-              id: m.id,
-              max: m.max,
-              cur: this.invs.filter(f => f.id == m.id)[0].count + c
-            }
-          })
+                    c += t
+                      .filter(f => f.id == m.id)
+                      .map(f => f.count)
+                      .reduce(function (prev, next, index, array) {
+                        return prev + next
+                      })
+                  }
+                })
+
+              return {
+                id: m.id,
+                max: m.max,
+                cur: this.invs.filter(f => f.id == m.id)[0].count + c
+              }
+            })
+          }
         }
-      })
+      )
     },
     onChangeCount(value, name) {
       if (this.curPartnerId == '') {
@@ -325,7 +373,7 @@ export default {
         }
         let cache = this.cache.filter(f => f.id == invId)
         if (cache.length > 0) {
-          cache = cache[0];
+          cache = cache[0]
           cache.cur += value
           let cacheIdex = this.cache.findIndex(f => f.id == invId)
           this.$set(this.cache, cacheIdex, cache)
@@ -339,10 +387,10 @@ export default {
         const _index = index
         const _index1 = index1 == 0 ? 1 : 0
 
-
         this.invs[_index].partners[_index1].count = floatSub(
-          this.invs[_index].count, this.invs[index].partners[index1].count)
-
+          this.invs[_index].count,
+          this.invs[index].partners[index1].count
+        )
       }
     },
     onPlus1(name) {
@@ -350,11 +398,12 @@ export default {
       const index1 = name.split('_')[1]
       if (this.invs[index].partners.length == 2) {
         const _index = index
-        const _index1 = index1 == 0 ? 1 : 0 
+        const _index1 = index1 == 0 ? 1 : 0
 
-        this.invs[_index].partners[_index1].count = floatSub(floatSub(
-          this.invs[_index].count, this.invs[index].partners[index1].count), 1)
-
+        this.invs[_index].partners[_index1].count = floatSub(
+          floatSub(this.invs[_index].count, this.invs[index].partners[index1].count),
+          1
+        )
       }
     },
     onMinus1(name) {
@@ -364,8 +413,10 @@ export default {
         const _index = index
         const _index1 = index1 == 0 ? 1 : 0
 
-        this.invs[_index].partners[_index1].count = floatAdd(floatSub(
-          this.invs[_index].count, this.invs[index].partners[index1].count), 1)
+        this.invs[_index].partners[_index1].count = floatAdd(
+          floatSub(this.invs[_index].count, this.invs[index].partners[index1].count),
+          1
+        )
       }
     },
     onPlus(name) {
@@ -446,7 +497,7 @@ export default {
       this.invs = []
       this.currentCls = cls.name
       this.currentClsId = cls.id
-      this.curIndex = index;
+      this.curIndex = index
       this.clsList.forEach((e, i) => {
         e.isChoose = i == index
         this.$set(this.clsList, i, e)
@@ -455,7 +506,7 @@ export default {
       const ps = this.clsListCopy
         .filter(f => f.idinventoryclass == cls.id)
         .map(m => {
-          return getPoDetail({ date: this.currentDateStr, partnerId: m.idParent ,clsId:this.currentClsId})
+          return getPoDetail({ date: this.currentDateStr, partnerId: m.idParent, clsId: this.currentClsId })
         })
 
       Promise.all(ps).then(values => {
@@ -509,7 +560,7 @@ export default {
           max: m.count,
           count: m.partners
             .map(f => f.count)
-            .reduce(function(prev, cur) {
+            .reduce(function (prev, cur) {
               return prev + cur
             })
         }
@@ -519,7 +570,7 @@ export default {
         return {
           price: m.partners
             .map(f => f.price)
-            .reduce(function(prev, cur) {
+            .reduce(function (prev, cur) {
               return prev + cur
             })
         }
@@ -527,18 +578,18 @@ export default {
 
       let t2 = this.invs.map(m => {
         return {
-          prices: m.partners
-            .map(f => { return { price: f.price, count: f.count } })
+          prices: m.partners.map(f => {
+            return { price: f.price, count: f.count }
+          })
         }
       })
-      return t.some(f => f.count != f.max) ||
-        t.some(f => f.count == 0) ||
-        t1.some(f => f.price == 0) ||
-        t2.some(f => f.prices.filter(p => p.price == 0 && p.count > 0).length > 0)
+      return t.some(f => f.count != f.max) || t.some(f => f.count == 0)
+      //t1.some(f => f.price == 0) ||
+      //t2.some(f => f.prices.filter(p => p.price == 0 && p.count > 0).length > 0)
     },
     onClickSubmit() {
       if (this.beforeSave()) {
-        this.$toast({ type: 'fail', message: '存在数量或单价异常,请检查' })
+        this.$toast({ type: 'fail', message: '存在数量异常,请检查' })
       } else {
         setStorage(this.groupId + '_P41_ShopCar_Invs', JSON.stringify(this.invs))
         this.$router.push({ path: '/p41_1', query: { date: this.currentDateStr, group: this.groupId, id: this.id } })
@@ -616,7 +667,7 @@ export default {
   .left {
     height: 100%;
     overflow: scroll;
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -629,7 +680,7 @@ export default {
   .right {
     height: calc(100% - 34px);
     overflow: scroll;
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .title {

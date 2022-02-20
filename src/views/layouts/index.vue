@@ -59,7 +59,7 @@ export default {
   mounted() {
     getAuditCount().then(({ code, data, message }) => {
       if (code == 200) {
-        this.setCount(data.count);
+        this.setCount(data.count)
       }
     })
   }
