@@ -11,13 +11,14 @@
         <van-cell title="送货日期" :value="requiredDateStr" is-link @click="showDateVisiable = true" />
       </van-cell-group>
 
-      <van-cell-group :title="'订单信息 部门:'+inv.deptName" v-for="(inv,index) in invs_p" :key="index">
+      <van-cell-group :title="'订单信息 部门:' + inv.deptName" v-for="(inv, index) in invs_p" :key="index">
         <van-cell :label="inv.specification">
           <template #title>
             <span class="custom-title">{{ inv.name }}</span>
             <van-tag type="danger" style="margin-left: 5px">{{ inv.unitname }}</van-tag>
           </template>
           <template #label>
+            <p class="custom-title">规格:{{ inv.specification }}</p>
             <van-cell v-for="p in inv.partners" :key="p.partnerId">
               <template #title>
                 <span class="custom-title">{{ p.partnerName }}</span>
@@ -40,7 +41,13 @@
       </div>
 
       <van-popup v-model="showDateVisiable" round position="bottom" :style="{ height: '40%' }">
-        <van-datetime-picker @confirm="showDateVisiable = false" @cancel="showDateVisiable = false" v-model="requiredDate" type="date" title="选择年月日" />
+        <van-datetime-picker
+          @confirm="showDateVisiable = false"
+          @cancel="showDateVisiable = false"
+          v-model="requiredDate"
+          type="date"
+          title="选择年月日"
+        />
       </van-popup>
     </div>
   </div>
@@ -119,7 +126,7 @@ export default {
               })
             })
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     beforeSave() {
       if (this.invs_p.map(m => m.amount).some(s => Number(s) <= 0)) {
@@ -191,14 +198,14 @@ export default {
                     }
                   })
               })
-              .catch(err => { 
+              .catch(err => {
                 this.$dialog.alert({
                   title: '提示',
                   message: '保存订单发生异常!'
                 })
               })
           })
-          .catch(() => { })
+          .catch(() => {})
       }
     }
   },

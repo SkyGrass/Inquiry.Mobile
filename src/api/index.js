@@ -46,6 +46,7 @@ const api = {
   UnAudit: '/v1/bus/audit/undo',
   AuditAsk: '/v1/bus/ask/audit',
   BaseList: '/v1/bus/base/list',
+  PoCls: '/v1/bus/po/cls',
   PoDetail: '/v1/bus/po/detail',
   SavePo: '/v1/bus/po/save',
   SavePoMuilt: '/v1/bus/po/saveMuilt',
@@ -68,7 +69,10 @@ const api = {
   UnAuditSign: '/v1/bus/sign/unaudit',
   SignRecord: '/v1/bus/sign/record',
 
-  BhList: 'v1/bus/bh/list'
+  BhList: 'v1/bus/bh/list',
+
+  DayList: '/v1/bus/rpt/daylist',
+  SubDayList: '/v1/bus/rpt/subdaylist'
 }
 
 export default api

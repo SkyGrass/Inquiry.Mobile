@@ -28,7 +28,7 @@
           }"
           style=""
         >
-          <div class="item"><span style="margin-right: 3px">单号 :</span>{{ item.billNo }}</div>
+          <div class="item"><span style="margin-right: 3px">单号 :</span>{{ item.displayBillNo }}</div>
           <div class="item"><span style="margin-right: 3px">日期 :</span>{{ item.date }}</div>
           <div @click="onClick('/p31', item)" class="detailsInfo">查看详情</div>
         </div>
@@ -66,7 +66,7 @@ export default {
           if (code == 200) {
             this.list = data.map(m => {
               m.date = dayjs(m.date).format('YYYY-MM-DD HH:mm:ss')
-               m.auditDate = dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
+              m.auditDate = dayjs(m.auditDate).format('YYYY-MM-DD HH:mm:ss')
               m.isDeleted = m.isDeleted == 1
               m.description = this.type == 0 ? '您有一份询价等待报价,请填写!' : '您的报价已经提交!'
               return m
@@ -86,7 +86,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

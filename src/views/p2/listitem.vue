@@ -29,7 +29,7 @@
           }"
           style=""
         >
-          <div class="item"><span style="margin-right: 3px">询价单号 :</span>{{ item.billNo }}</div>
+          <div class="item"><span style="margin-right: 3px">询价单号 :</span>{{ item.displayBillNo }}</div>
           <div class="item"><span style="margin-right: 3px">询价日期 :</span>{{ item.date }}</div>
 
           <div class="item" v-if="item.status == 1">
@@ -90,7 +90,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight  - 100
   }
 }
 </script>

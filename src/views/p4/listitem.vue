@@ -30,7 +30,7 @@
           style=""
         >
           <div class="item"><span style="margin-right: 3px">供应商 :</span>{{ item.partnerName }}</div>
-          <div class="item"><span style="margin-right: 3px">采购单号 :</span>{{ item.billNo }}</div>
+          <div class="item"><span style="margin-right: 3px">采购单号 :</span>{{ item.displayBillNo }}</div>
           <div class="item"><span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
           <div class="item"><span style="margin-right: 3px">申购日期 :</span>{{ item.askDateStr }}</div>
           <div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
@@ -95,7 +95,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <div class="root">
     <div class="vcr">
       <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="description" />
-      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：'+readflg" />
+      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：' + readflg" />
       <van-cell-group title="用户信息">
         <van-cell title="制单人" :value="userName" />
         <van-cell title="制单日期" :value="date" />
@@ -23,12 +23,21 @@
               <template #title>
                 <span class="custom-title">{{ v.name }}</span>
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
-                <van-tag type="danger" style="margin-left:4px">{{ v.deptName }}</van-tag>
+                <van-tag type="danger" style="margin-left: 4px">{{ v.deptName }}</van-tag>
               </template>
               <template #label>
+                <van-field v-model="v.specification" label="规格" readonly />
                 <van-field v-model="v.price" type="number" label="单价" readonly />
                 <van-field v-model="v.count" type="number" label="数量" readonly />
-                <van-field readonly :ref="'input_' + i + '_' + a" :id="'input_' + i + '_' + a" v-model="v.amount" type="number" autocomplete='off' label="总价" />
+                <van-field
+                  readonly
+                  :ref="'input_' + i + '_' + a"
+                  :id="'input_' + i + '_' + a"
+                  v-model="v.amount"
+                  type="number"
+                  autocomplete="off"
+                  label="总价"
+                />
                 <!-- <van-field
                           readonly
                           v-model="v.remark"
@@ -103,10 +112,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-          .map(f => 1)
-          .reduce(function(prev, next, index, array) {
-            return prev + next
-          })
+            .map(f => 1)
+            .reduce(function (prev, next, index, array) {
+              return prev + next
+            })
         : 0
     },
     async cars() {
@@ -192,7 +201,7 @@ export default {
               })
             })
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     doUnAudit() {
       this.$dialog
@@ -223,7 +232,7 @@ export default {
               })
             })
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     del() {
       this.$dialog
@@ -252,7 +261,7 @@ export default {
               })
             })
         })
-        .catch(() => { })
+        .catch(() => {})
     }
   },
   mounted() {

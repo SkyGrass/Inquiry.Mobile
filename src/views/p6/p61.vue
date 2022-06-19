@@ -1,9 +1,12 @@
 <template>
   <div class="wrapper">
-    <div ref="fresh" :style="{ 
-                    'overflow-y': 'scroll',
-                    'box-sizing': 'border-box'
-                  }">
+    <div
+      ref="fresh"
+      :style="{
+        'overflow-y': 'scroll',
+        'box-sizing': 'border-box'
+      }"
+    >
       <van-search show-action v-model="keyword" placeholder="请输入搜索关键词" @search="onSearch" @cancel="onCancel" />
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
 
@@ -65,7 +68,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

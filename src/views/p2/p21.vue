@@ -4,12 +4,24 @@
       <van-search readonly placeholder="请输入搜索关键词" input-align="center" @click="gotoSearch" />
       <van-col span="6" class="left">
         <van-sidebar v-model="activeKey" class="menu" @change="onChangeTab">
-          <van-sidebar-item :id="'_' + c.id" :dot="cls_p.filter(f => f.id == c.id).length > 0" class="item" v-for="c in cls" :key="c.id" :title="c.name" />
+          <van-sidebar-item
+            :id="'_' + c.id"
+            :dot="cls_p.filter(f => f.id == c.id).length > 0"
+            class="item"
+            v-for="c in cls"
+            :key="c.id"
+            :title="c.name"
+          />
         </van-sidebar>
       </van-col>
       <van-col span="18" class="right">
         <van-empty image="search" description="没有查询到存货" v-if="invs.length <= 0" />
-        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.id">
+        <div
+          :id="'_' + inv.clsId + '_' + inv.id"
+          class="title van-cell-group__tit1e"
+          v-for="(inv, i) in invs"
+          :key="inv.id"
+        >
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
@@ -20,7 +32,15 @@
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
             </template>
             <template #extra>
-              <van-stepper :disabled="!canUse" @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')" @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')" v-model="inv.count" theme="round" min="0" :max="inv.max" />
+              <van-stepper
+                :disabled="!canUse"
+                @plus="onPlus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
+                @minus="onMinus(i + '_' + inv.clsId + '_' + inv.id + '_q')"
+                v-model="inv.count"
+                theme="round"
+                min="0"
+                :max="inv.max"
+              />
             </template>
           </van-cell>
         </div>
@@ -36,7 +56,7 @@
       <van-notice-bar v-if="cars && cars.length > 0" left-icon="volume-o" text="向右滑动条目快速删除" />
       <van-empty image="search" description="购物车内没有东西" v-if="cars && cars.length <= 0" />
       <van-cell-group :title="c.clsName" v-for="(c, i) in cars" :key="i">
-        <van-swipe-cell :before-close="beforeClose" :name="c.clsId+'_'+v.id" v-for="(v, a) in c.invs" :key="a">
+        <van-swipe-cell :before-close="beforeClose" :name="c.clsId + '_' + v.id" v-for="(v, a) in c.invs" :key="a">
           <van-cell :label="v.specification">
             <template #title>
               <span class="custom-title">{{ v.name }}</span>
@@ -47,7 +67,13 @@
               <span class="custom-title">规格:{{ v.specification == '' ? '-' : v.specification }}</span>
             </template>
             <template #extra>
-              <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')" v-model="v.count" theme="round" min="0" />
+              <van-stepper
+                @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p')"
+                @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p')"
+                v-model="v.count"
+                theme="round"
+                min="0"
+              />
             </template>
           </van-cell>
           <template #left>
@@ -58,7 +84,9 @@
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
         <van-col span="20">
-          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small">清空购物车</van-button>
+          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small"
+            >清空购物车</van-button
+          >
         </van-col>
         <van-col span="2"></van-col>
       </van-row>
@@ -69,7 +97,13 @@
           <van-list>
             <van-cell @click="onClickPartner(item)" v-for="item in partners_p" :key="item.id" :title="item.name">
               <template #icon>
-                <van-icon v-if="item.id == curPartnerId" name="success" size="24" :color="item.id == curPartnerId ? 'red' : ''" class="success-icon" />
+                <van-icon
+                  v-if="item.id == curPartnerId"
+                  name="success"
+                  size="24"
+                  :color="item.id == curPartnerId ? 'red' : ''"
+                  class="success-icon"
+                />
               </template>
               <template>
                 <van-button @click="onClickRemove(item)" type="warning" size="small">移除</van-button>
@@ -78,11 +112,25 @@
           </van-list>
         </van-tab>
         <van-tab title="供应商列表">
-          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
+          <van-search
+            v-model="keyword"
+            placeholder="请输入搜索关键词"
+            show-action
+            @blur="onSearchBlur"
+            @search="onSearch"
+            @input="onSearch"
+            @cancel="onCancel"
+          />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
-                <van-button :disabled="item.isChoose" @click="onClickChoose(item)" :type="item.isChoose ? '' : 'primary'" size="small">选取</van-button>
+                <van-button
+                  :disabled="item.isChoose"
+                  @click="onClickChoose(item)"
+                  :type="item.isChoose ? '' : 'primary'"
+                  size="small"
+                  >选取</van-button
+                >
               </template>
             </van-cell>
           </van-list>
@@ -91,10 +139,24 @@
     </van-popup>
 
     <van-popup v-model="searchVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
-      <van-search show-action v-model="keyword_inv" placeholder="请输入搜索关键词" @blur="onSearchInvBlur" @search="onSearchInv" @cancel="onCancelInv" />
+      <van-search
+        show-action
+        v-model="keyword_inv"
+        placeholder="请输入搜索关键词"
+        @blur="onSearchInvBlur"
+        @search="onSearchInv"
+        @input="onSearchInv"
+        @cancel="onCancelInv"
+      />
       <van-empty v-if="!dataList.length > 0" description="没有发现记录"></van-empty>
       <div class="lists_item">
-        <van-cell v-for="(ele, i) in dataList" :label="'规格:' + ele.specification" :key="i" :title="ele.name" :value="ele.code">
+        <van-cell
+          v-for="(ele, i) in dataList"
+          :label="'规格:' + ele.specification"
+          :key="i"
+          :title="ele.name"
+          :value="ele.code"
+        >
           <template>
             <van-button @click="onClickChooseInv(ele)" type="primary" size="small">选取</van-button>
           </template>
@@ -123,7 +185,14 @@
         </van-field>
         <van-field name="remark" label="其他说明">
           <template #input>
-            <van-field type="textarea" rows="1" autosize v-model="form.remark" name="remark" placeholder="请填写其他说明" />
+            <van-field
+              type="textarea"
+              rows="1"
+              autosize
+              v-model="form.remark"
+              name="remark"
+              placeholder="请填写其他说明"
+            />
           </template>
         </van-field>
         <div style="margin: 16px">
@@ -176,10 +245,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-          .map(f => f.count)
-          .reduce(function(prev, next, index, array) {
-            return prev + next
-          })
+            .map(f => f.count)
+            .reduce(function (prev, next, index, array) {
+              return prev + next
+            })
         : 0
     },
     async cars() {
@@ -440,32 +509,30 @@ export default {
         setStorage(this.groupId + '_shopCar_P21_Dic', JSON.stringify(dic))
         this.$router.push({ path: '/p21_1', query: { group: this.groupId, id: this.id } })
       }
-    }
-    ,
+    },
     beforeClose({ name, position, instance }) {
       switch (position) {
         case 'left':
           const clsId = name.split('_')[0]
           const invId = name.split('_')[1]
-          const index = this.invs_p.findIndex(f => f.clsId == clsId && f.id == invId);
+          const index = this.invs_p.findIndex(f => f.clsId == clsId && f.id == invId)
           if (index > -1) {
             this.invs_p.splice(index, 1)
 
-            const _index = this.invs.findIndex(f => f.id == invId);
-            let _t = this.invs.filter(f => f.id == invId)[0];
+            const _index = this.invs.findIndex(f => f.id == invId)
+            let _t = this.invs.filter(f => f.id == invId)[0]
             if (_t != void 0) {
               _t.count = 0
               if (_index > -1) {
                 this.$set(this.invs, _index, _t)
               }
             }
-
           }
-          instance.close();
-          break;
+          instance.close()
+          break
         default:
-          instance.close();
-          break;
+          instance.close()
+          break
       }
     }
   },
@@ -540,7 +607,7 @@ export default {
   .left {
     height: calc(100% - 45px);
     overflow: scroll;
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -553,7 +620,7 @@ export default {
   .right {
     height: calc(100% - 45px);
     overflow: scroll;
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .title {

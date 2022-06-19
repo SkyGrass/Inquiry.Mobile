@@ -4,13 +4,24 @@
       <van-search readonly placeholder="请输入搜索关键词" input-align="center" @click="gotoSearch" />
       <van-col span="6" class="left">
         <van-sidebar v-model="activeKey" class="menu" @change="onChangeTab">
-          <van-sidebar-item :id="'_' + c.id" :dot="cls_p.filter(f => f.id == c.id).length > 0" class="item" v-for="c in cls" :key="c.id" :title="c.name" />
+          <van-sidebar-item
+            :id="'_' + c.id"
+            :dot="cls_p.filter(f => f.id == c.id).length > 0"
+            class="item"
+            v-for="c in cls"
+            :key="c.id"
+            :title="c.name"
+          />
         </van-sidebar>
       </van-col>
       <van-col span="18" class="right">
         <van-empty image="search" description="没有查询到存货" v-if="invs.length <= 0" />
-        <div :id="'_' + inv.clsId + '_' + inv.id" class="title van-cell-group__tit1e" v-for="(inv, i) in invs" :key="inv.id">
-
+        <div
+          :id="'_' + inv.clsId + '_' + inv.id"
+          class="title van-cell-group__tit1e"
+          v-for="(inv, i) in invs"
+          :key="inv.id"
+        >
           <!-- <div style="margin: 10px">{{ d.clsName }}</div> -->
           <van-cell :label="inv.specification">
             <template #title>
@@ -21,7 +32,11 @@
               <span class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</span>
             </template>
             <template #extra>
-              <van-button v-if="inv.count <= 0" size="small" @click="chooseUnit(i + '_' + inv.clsId + '_' + inv.id + '_p', inv)">
+              <van-button
+                v-if="inv.count <= 0"
+                size="small"
+                @click="chooseUnit(i + '_' + inv.clsId + '_' + inv.id + '_p', inv)"
+              >
                 选取
               </van-button>
               <span v-else>{{ inv.count }}{{ inv._unit }}</span>
@@ -39,20 +54,34 @@
       <van-notice-bar v-if="cars && cars.length > 0" left-icon="volume-o" text="向右滑动条目快速删除" />
       <van-empty image="search" description="购物车内没有东西" v-if="cars && cars.length <= 0" />
       <van-cell-group :title="c.clsName" v-for="(c, i) in cars" :key="i">
-        <van-swipe-cell :before-close="beforeClose" :name="c.clsId+'_'+v.id" v-for="(v, a) in c.invs" :key="a">
+        <van-swipe-cell :before-close="beforeClose" :name="c.clsId + '_' + v.id" v-for="(v, a) in c.invs" :key="a">
           <van-cell :label="v.specification">
             <template #title>
-              <span class="custom-title">{{ v.name }}</span>
-              <van-tag type="danger">{{ v._unit }}</van-tag>
+              <div style="display: inline-flex; justify-content: space-between; width: 100%">
+                <div>
+                  <span class="custom-title">{{ v.name }}</span>
+                  <van-tag type="danger">{{ v._unit }}</van-tag>
+                </div>
+                <div>规格：{{ v.specification == '' ? '-' : v.specification }}</div>
+              </div>
             </template>
             <template #label>
-              <van-field label="规格" v-model="v.specification" readonly/>
-              <number-input label="数量" type="number" v-model="v.count" @blur="changeCount(v)" autocomplete='off' />
-              <van-field label="说明" v-model="v.remark" readonly/>
+              <div style="display: inline-flex; justify-content: space-between; width: 100%">
+                <div style="flex: 2">
+                  <number-input
+                    label="数量"
+                    type="number"
+                    v-model="v.count"
+                    label-width="auto"
+                    @blur="changeCount(v)"
+                    autocomplete="off"
+                  />
+                </div>
+                <div>
+                  <van-field label-width="auto" class="card" label="说明" v-model="v.remark" readonly />
+                </div>
+              </div>
             </template>
-            <!--<template #extra>
-                                                                                                          <van-stepper @plus="onPlus(i + '_' + v.clsId + '_' + v.id + '_p', v)" @minus="onMinus(i + '_' + v.clsId + '_' + v.id + '_p', v)" v-model="v.count" theme="round" min="0" />
-                                                                                                        </template>-->
           </van-cell>
           <template #left>
             <van-button square text="删除" type="danger" class="delete-button" />
@@ -62,17 +91,33 @@
       <van-row type="flex" justify="center" style="margin-top: 5px">
         <van-col span="2"></van-col>
         <van-col span="20">
-          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small">清空购物车</van-button>
+          <van-button @click="onClickClear" v-if="invs_p.length > 0" style="width: 100%" type="warning" size="small"
+            >清空购物车</van-button
+          >
         </van-col>
         <van-col span="2"></van-col>
       </van-row>
     </van-popup>
 
     <van-popup v-model="searchVisiable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
-      <van-search show-action v-model="keyword" placeholder="请输入搜索关键词" @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
+      <van-search
+        show-action
+        v-model="keyword"
+        placeholder="请输入搜索关键词"
+        @blur="onSearchBlur"
+        @search="onSearch"
+        @input="onSearch"
+        @cancel="onCancel"
+      />
       <van-empty v-if="!dataList.length > 0" description="没有发现记录"></van-empty>
       <div class="lists_item">
-        <van-cell v-for="(ele, i) in dataList" :label="'规格:' + ele.specification" :key="i" :title="ele.name" :value="ele.code">
+        <van-cell
+          v-for="(ele, i) in dataList"
+          :label="'规格:' + ele.specification"
+          :key="i"
+          :title="ele.name"
+          :value="ele.code"
+        >
           <template>
             <van-button @click="onClickChoose(ele)" type="primary" size="small">选取</van-button>
           </template>
@@ -90,8 +135,16 @@
             </van-radio-group>
           </template>
         </van-field>
-        <number-input name="count" label="数量" type="number" v-model="form.count" autocomplete='off' />
-        <van-field name="remark" label="其他说明" type="textarea" rows="1" autosize v-model="form.remark" placeholder="请填写其他说明" />
+        <number-input name="count" label="数量" type="number" v-model="form.count" autocomplete="off" />
+        <van-field
+          name="remark"
+          label="其他说明"
+          type="textarea"
+          rows="1"
+          autosize
+          v-model="form.remark"
+          placeholder="请填写其他说明"
+        />
         <div style="margin: 16px">
           <van-button round block type="info" native-type="submit">确定</van-button>
         </div>
@@ -139,10 +192,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-          .map(f => f.count)
-          .reduce(function(prev, next, index, array) {
-            return floatAdd(prev, next)
-          })
+            .map(f => f.count)
+            .reduce(function (prev, next, index, array) {
+              return floatAdd(prev, next)
+            })
         : 0
     },
     async cars() {
@@ -329,30 +382,28 @@ export default {
       }
     },
     beforeClose({ name, position, instance }) {
-      console.log(name)
       switch (position) {
         case 'left':
           const clsId = name.split('_')[0]
           const invId = name.split('_')[1]
-          const index = this.invs_p.findIndex(f => f.clsId == clsId && f.id == invId);
+          const index = this.invs_p.findIndex(f => f.clsId == clsId && f.id == invId)
           if (index > -1) {
             this.invs_p.splice(index, 1)
 
-            const _index = this.invs.findIndex(f => f.id == invId);
-            let _t = this.invs.filter(f => f.id == invId)[0];
+            const _index = this.invs.findIndex(f => f.id == invId)
+            let _t = this.invs.filter(f => f.id == invId)[0]
             if (_t != void 0) {
               _t.count = 0
               if (_index > -1) {
                 this.$set(this.invs, _index, _t)
               }
             }
-
           }
-          instance.close();
-          break;
+          instance.close()
+          break
         default:
-          instance.close();
-          break;
+          instance.close()
+          break
       }
     }
   },
@@ -403,7 +454,7 @@ export default {
     height: calc(100% - 45px);
     overflow: scroll;
 
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .menu {
@@ -416,12 +467,17 @@ export default {
   .right {
     height: calc(100% - 45px);
     overflow: scroll;
-     ::-webkit-scrollbar {
+    ::-webkit-scrollbar {
       display: none;
     }
     .title {
       font-size: 18px;
     }
+  }
+}
+.card {
+  .van-field__label {
+    width: auto !important;
   }
 }
 </style>

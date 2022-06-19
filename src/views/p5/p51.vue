@@ -27,8 +27,7 @@
               <van-tag type="danger" style="margin-left: 5px">{{ inv.deptName }}</van-tag>
             </template>
             <template #label>
-              <!--<p class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</p>-->
-
+              <p class="custom-title">规格:{{ inv.specification == '' ? '-' : inv.specification }}</p>
               <van-field v-model="inv.price" type="number" label="单价" readonly/>
               <number-input v-model="inv.count" label="数量" />
               <van-field label="缺货">
@@ -57,7 +56,8 @@
     <van-popup v-model="partnerVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
       <van-tabs v-model="active">
         <van-tab title="供应商列表">
-          <van-search v-model="keyword" placeholder="请输入搜索关键词" show-action @blur="onSearchBlur" @search="onSearch" @cancel="onCancel" />
+          <van-search v-model="keyword" placeholder="请输入搜索关键词"
+           show-action @blur="onSearchBlur" @input="onSearchBlur" @search="onSearch" @cancel="onCancel" />
           <van-list :finished="finished" finished-text="没有更多了">
             <van-cell v-for="item in partners" :key="item.id" :title="item.name">
               <template>
@@ -118,9 +118,8 @@ export default {
     async id() {
       return this.$route.query.id || void 0
     },
-    async billNoList() {
-      //return this.billNos.map(m => `${m.billNo}(${m.requiredDate})`);
-      return this.billNos.map(m => `${m.billNo}`);
+    async billNoList() { 
+      return this.billNos.map(m => `${m.displayBillNo}`);
     }
   },
   watch: {
@@ -139,7 +138,7 @@ export default {
       }
     },
     onConfirmBillNo(value, index) {
-      this.currentOrderBillNo = this.billNos[index].billNo
+      this.currentOrderBillNo = this.billNos[index].displayBillNo
       this.currentDateStr = this.billNos[index].requiredDate
       this.showOrder = false
       this.getDetail(this.billNos[index].id)
@@ -164,7 +163,7 @@ export default {
           })
           if (data.length > 0) {
             this.currentDateStr = data[0].requiredDate
-            this.currentOrderBillNo = data[0].billNo
+            this.currentOrderBillNo = data[0].displayBillNo
 
             this.getDetail(data[0].id)
           }

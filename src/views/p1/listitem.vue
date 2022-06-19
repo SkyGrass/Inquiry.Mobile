@@ -29,7 +29,7 @@
           }"
           style=""
         >
-          <div class="item"><span style="margin-right: 3px">申购单号 :</span>{{ item.billNo }}</div>
+          <div class="item"><span style="margin-right: 3px">申购单号 :</span>{{ item.displayBillNo }}</div>
           <div class="item"><span style="margin-right: 3px">申购日期 :</span>{{ item.date }}</div>
           <div @click="onClick('/p11_2', item)" class="detailsInfo">查看详情</div>
         </div>
@@ -81,7 +81,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

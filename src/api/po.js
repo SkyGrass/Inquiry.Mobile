@@ -2,6 +2,15 @@ import api from './index'
 // axios
 import request from '@/utils/request'
 
+export function getPoCls(data) {
+    return request({
+        url: api.PoCls,
+        method: 'post',
+        data,
+        hideloading: true
+    })
+}
+
 export function getPoDetail(data) {
     return request({
         url: api.PoDetail,

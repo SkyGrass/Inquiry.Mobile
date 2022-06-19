@@ -30,7 +30,7 @@
           style=""
         >
           <div class="item"><span style="margin-right: 3px">供应商 :</span>{{ item.partnerName }}</div>
-          <div class="item"><span style="margin-right: 3px">签收单号 :</span>{{ item.billNo }}</div>
+          <div class="item"><span style="margin-right: 3px">签收单号 :</span>{{ item.displayBillNo }}</div>
           <div class="item"><span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
           <!--<div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>-->
           <div class="item" v-if="item.status == 1">
@@ -93,7 +93,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

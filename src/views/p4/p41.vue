@@ -1,13 +1,13 @@
 <template>
   <div>
-    <van-row class="partner">
-      <van-col span="24">
-        <van-cell title="请选择大类" is-link :value="currentCls" @click="partnerClsVisable = true"></van-cell>
-      </van-col>
-    </van-row>
     <van-row class="date">
       <van-col span="24">
         <van-cell title="请选择日期" is-link :value="currentDateStr" @click="chooseDate"></van-cell>
+      </van-col>
+    </van-row>
+    <van-row class="partner">
+      <van-col span="24">
+        <van-cell title="请选择大类" is-link :value="currentCls" @click="partnerClsVisable = true"></van-cell>
       </van-col>
     </van-row>
     <van-row class="root">
@@ -23,6 +23,7 @@
               <van-tag type="danger" style="margin-left: 5px">{{ inv.deptName }}</van-tag>
             </template>
             <template #label>
+              <p class="custom-title">规格:{{ inv.specification }}</p>
               <van-cell v-for="(p, pi) in inv.partners" :key="pi">
                 <template #title>
                   <span class="custom-title">{{ p.partnerName }}</span>
@@ -51,7 +52,7 @@
     <van-goods-action>
       <van-goods-action-button type="danger" :disabled="!canSave" text="提交保存" @click="onClickSubmit" />
     </van-goods-action>
-    <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }">
+    <van-popup v-model="showDate" round position="bottom" :style="{ height: '40%' }" @closed="confirmDate">
       <van-datetime-picker
         :min-date="minDate"
         @confirm="confirmDate"
@@ -146,7 +147,7 @@
 
 <script>
 import { getPartnerCls, getPartners } from '@/api/home.js'
-import { getPoDetail } from '@/api/po.js'
+import { getPoDetail, getPoCls } from '@/api/po.js'
 import { mounted } from '@/mix/mounted.js'
 import { mapGetters } from 'vuex'
 import { setStorage, getStorage } from '@/utils/index.js'
@@ -157,6 +158,7 @@ export default {
   mixins: [mounted],
   data() {
     return {
+      _clsId: [], //可以显示的大类
       partners: [],
       partners_copy: [],
       active: 0,
@@ -235,22 +237,25 @@ export default {
     },
     confirmDate() {
       this.showDate = false
-      this.$dialog
-        .confirm({
-          title: '提示',
-          message: '切换日期将重置数据,是否继续?'
-        })
-        .then(() => {
-          this.clearCache(() => {
-            this.onClickChoosePcls(
-              {
-                name: this.currentCls,
-                id: this.currentClsId
-              },
-              this.curIndex
-            )
-          })
-        })
+      this.$nextTick(() => {
+        this.getCls()
+      })
+      // this.$dialog
+      //   .confirm({
+      //     title: '提示',
+      //     message: '切换日期将重置数据,是否继续?'
+      //   })
+      //   .then(() => {
+      //     this.clearCache(() => {
+      //       this.onClickChoosePcls(
+      //         {
+      //           name: this.currentCls,
+      //           id: this.currentClsId
+      //         },
+      //         this.curIndex
+      //       )
+      //     })
+      //   })
     },
     clearCache(success) {
       this.partners_p.forEach(({ id }) => {
@@ -583,17 +588,34 @@ export default {
           })
         }
       })
-      return t.some(f => f.count != f.max) || t.some(f => f.count == 0)
+      return t.some(f => f.count != f.max) || t.some(f => f.count == 0) || t.length <= 0
       //t1.some(f => f.price == 0) ||
       //t2.some(f => f.prices.filter(p => p.price == 0 && p.count > 0).length > 0)
     },
     onClickSubmit() {
       if (this.beforeSave()) {
-        this.$toast({ type: 'fail', message: '存在数量异常,请检查' })
+        this.$toast({ type: 'fail', message: '单据存在数量异常,请检查' })
       } else {
         setStorage(this.groupId + '_P41_ShopCar_Invs', JSON.stringify(this.invs))
         this.$router.push({ path: '/p41_1', query: { date: this.currentDateStr, group: this.groupId, id: this.id } })
       }
+    },
+    getCls() {
+      getPartnerCls({ date: this.currentDateStr }).then(({ code, data, message }) => {
+        if (code == 200) {
+          this.clsListCopy = data
+          this.clsList = Array.from(new Set(data.map(m => m.idinventoryclass))).map(m => {
+            return {
+              id: m,
+              name: data.filter(f => f.idinventoryclass == m)[0].invClsName,
+              isChoose: false
+            }
+          })
+          if (data.length <= 0) {
+            this.$toast({ type: 'fail', message: '未发现可以下单的大类,请检查!' })
+          }
+        }
+      })
     }
   },
   computed: {
@@ -605,17 +627,8 @@ export default {
         this.curPartnerId = this.$route.query.partnerId
       }
     }
-    getPartnerCls().then(({ code, data, message }) => {
-      if (code == 200) {
-        this.clsListCopy = data
-        this.clsList = Array.from(new Set(data.map(m => m.idinventoryclass))).map(m => {
-          return {
-            id: m,
-            name: data.filter(f => f.idinventoryclass == m)[0].invClsName,
-            isChoose: false
-          }
-        })
-      }
+    this.$nextTick(() => {
+      this.getCls()
     })
     getPartners().then(({ code, data, message }) => {
       if (code == 200) {
@@ -652,7 +665,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.partner {
+.date {
   margin-top: 44px;
 }
 

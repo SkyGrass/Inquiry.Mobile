@@ -1,29 +1,38 @@
 <template>
   <van-pull-refresh success-text="刷新成功" v-model="isLoading" @refresh="onRefresh">
-    <div ref="fresh" :style="{
-            height: freshHeight + 'px',
-            'overflow-y': 'scroll',
-            'box-sizing': 'border-box',
-            'padding-bottom': '44px'
-          }">
+    <div
+      ref="fresh"
+      :style="{
+        height: freshHeight + 'px',
+        'overflow-y': 'scroll',
+        'box-sizing': 'border-box',
+        'padding-bottom': '44px'
+      }"
+    >
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
-      <div class="lists_item" :style="{
-              color: item.isDeleted ? '#999999' : ''
-            }" v-for="(item, index) in list" :key="index">
+      <div
+        class="lists_item"
+        :style="{
+          color: item.isDeleted ? '#999999' : ''
+        }"
+        v-for="(item, index) in list"
+        :key="index"
+      >
         <div class="oneLine">
           <div class="operator">申请人:{{ item.billerName }}({{ item.deptName }})</div>
           <div class="add_time">{{ item.isDeleted ? '已作废' : item.auditState }}</div>
         </div>
-        <div class="content" :style="{
-                color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
-                padding: '0 20px'
-              }" style="">
-          <div class="item">
-            <span style="margin-right: 3px">类型 :</span>{{ item.billTypeName }}</div>
-          <div class="item">
-            <span style="margin-right: 3px">申购单号 :</span>{{ item.billNo }}</div>
-          <div class="item">
-            <span style="margin-right: 3px">申购日期 :</span>{{ item.date }}</div>
+        <div
+          class="content"
+          :style="{
+            color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
+            padding: '0 20px'
+          }"
+          style=""
+        >
+          <div class="item"><span style="margin-right: 3px">类型 :</span>{{ item.billTypeName }}</div>
+          <div class="item"><span style="margin-right: 3px">申购单号 :</span>{{ item.displayBillNo }}</div>
+          <div class="item"><span style="margin-right: 3px">申购日期 :</span>{{ item.date }}</div>
           <div @click="onClick('/p11_2', item)" class="detailsInfo">查看详情</div>
         </div>
       </div>
@@ -81,7 +90,7 @@ export default {
     this.getList()
   },
   mounted() {
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top - 95
+    this.freshHeight = document.documentElement.clientHeight - 145
   }
 }
 </script>

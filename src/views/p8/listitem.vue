@@ -1,34 +1,43 @@
 <template>
   <van-pull-refresh success-text="刷新成功" v-model="isLoading" @refresh="onRefresh">
-    <div ref="fresh" :style="{
-                                height: freshHeight + 'px',
-                                'overflow-y': 'scroll',
-                                'box-sizing': 'border-box'
-                              }">
+    <div
+      ref="fresh"
+      :style="{
+        height: freshHeight + 'px',
+        'overflow-y': 'scroll',
+        'box-sizing': 'border-box'
+      }"
+    >
       <van-empty v-if="!list.length > 0" description="没有发现记录"></van-empty>
-      <div class="lists_item" :style="{
-                                  color: item.isDeleted ? '#999999' : ''
-                                }" v-for="(item, index) in list" :key="index">
+      <div
+        class="lists_item"
+        :style="{
+          color: item.isDeleted ? '#999999' : ''
+        }"
+        v-for="(item, index) in list"
+        :key="index"
+      >
         <div class="oneLine">
           <div class="operator">供应商:{{ item.partnerName }}</div>
           <div class="add_time">{{ item.isDeleted ? '已作废' : item.auditState }}</div>
         </div>
-        <div class="content" :style="{
-                                    color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
-                                    padding: '0 20px'
-                                  }" style="">
-          <div class="item" style="display: inline-flex;width: 100%;justify-content: space-between;">
-            <div>
-              <span style="margin-right: 3px">采购单号 :</span>{{ item.billNo }}</div>
-            <div style="font-size:16px">
-              {{ item.readflag }}</div>
+        <div
+          class="content"
+          :style="{
+            color: item.isDeleted ? '#999999' : 'rgb(153, 153, 153)',
+            padding: '0 20px'
+          }"
+          style=""
+        >
+          <div class="item" style="display: inline-flex; width: 100%; justify-content: space-between">
+            <div><span style="margin-right: 3px">采购单号 :</span>{{ item.displayBillNo }}</div>
+            <div style="font-size: 16px">
+              {{ item.readflag }}
+            </div>
           </div>
-          <div class="item">
-            <span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
-          <div class="item">
-            <span style="margin-right: 3px">采购日期 :</span>{{ item.askDateStr }}</div>
-          <div class="item">
-            <span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
+          <div class="item"><span style="margin-right: 3px">制单日期 :</span>{{ item.dateStr }}</div>
+          <div class="item"><span style="margin-right: 3px">采购日期 :</span>{{ item.askDateStr }}</div>
+          <div class="item"><span style="margin-right: 3px">到货日期 :</span>{{ item.requiredDateStr }}</div>
           <div class="item" v-if="item.status == 1">
             <span style="margin-right: 3px">审批人 :</span>{{ item.auditerName }}
           </div>
@@ -102,7 +111,7 @@ export default {
   },
   mounted() {
     this.getList()
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100
   }
 }
 </script>

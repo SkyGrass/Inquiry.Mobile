@@ -75,7 +75,7 @@ export default {
     bus.$off('searchResult')
   },
   mounted() {
-    this.freshHeight = document.documentElement.clientHeight - this.$refs.fresh.getBoundingClientRect().top
+    this.freshHeight = document.documentElement.clientHeight - 100//this.$refs.fresh.getBoundingClientRect().top
   }
 }
 </script>

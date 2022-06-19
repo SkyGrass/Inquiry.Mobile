@@ -2,7 +2,7 @@
   <div class="root">
     <div class="vcr">
       <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="description" />
-      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：'+readflg" />
+      <van-notice-bar left-icon="volume-o" background="#e6e6e6e6" :text="'状态：' + readflg" />
       <!-- <van-cell-group title="用户信息">
                           <van-cell title="制单人" :value="userName" />
                           <van-cell title="制单日期" :value="date" />
@@ -25,7 +25,7 @@
                 <van-tag type="danger">{{ v.unitname }}</van-tag>
               </template>
               <template #label>
-                <!-- <van-field v-model="v.price" type="number" label="单价" disabled /> -->
+                <van-field v-model="v.specification" label="规格" readonly />
                 <van-field v-model="v.count" type="number" label="数量" readonly />
                 <van-field v-model="v.finishCount" type="number" label="已完成" readonly />
                 <!-- <van-field
@@ -36,7 +36,15 @@
                                     type="number"
                                     label="总价"
                                   /> -->
-                <van-field readonly v-model="v.remark" rows="1" autosize label="其他说明" type="textarea" placeholder="请输入说明" />
+                <van-field
+                  readonly
+                  v-model="v.remark"
+                  rows="1"
+                  autosize
+                  label="其他说明"
+                  type="textarea"
+                  placeholder="请输入说明"
+                />
               </template>
               <!--<template>
                     <span>规格：{{ v.specification == '' ? '-' : v.specification }}</span>
@@ -83,10 +91,10 @@ export default {
     async total() {
       return this.invs_p.length > 0
         ? this.invs_p
-          .map(f => 1)
-          .reduce(function(prev, next, index, array) {
-            return prev + next
-          })
+            .map(f => 1)
+            .reduce(function (prev, next, index, array) {
+              return prev + next
+            })
         : 0
     },
     async cars() {
@@ -148,11 +156,7 @@ export default {
         .catch(() => {
           this.$toast({ type: 'fail', message: '查询订单详情发生错误!' })
         })
-
-
     }
-
-
   }
 }
 </script>

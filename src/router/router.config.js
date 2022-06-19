@@ -287,5 +287,21 @@ export const constantRouterMap = [
       title: '备货单详情',
       keepAlive: false
     }
+  },
+  {
+    path: '/p90',
+    component: () => import('@/views/p9/p90'),
+    meta: {
+      title: '送货清单',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/p91',
+    component: () => import('@/views/p9/p91'),
+    meta: {
+      title: '申购清单',
+      keepAlive: false
+    }
   }
 ]

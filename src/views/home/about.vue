@@ -3,7 +3,7 @@
   <div class="about-container">
     <div class="warpper">
       <div class="logo">
-        <van-image round width="3rem" height="3rem" :src="avator" />
+        <van-image round width="2rem" height="2rem" :src="avator" />
       </div>
       <p class="info">{{ userName }}({{ proTitle }})</p>
       <van-cell-group inset>
@@ -151,6 +151,7 @@ export default {
     .logo {
       width: 100%;
       text-align: center;
+      padding-top: 5px;
     }
     .info {
       font-size: 18px;
