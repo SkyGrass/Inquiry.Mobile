@@ -7,8 +7,19 @@
         'box-sizing': 'border-box'
       }"
     >
-      <van-cell title="送货日期" :value="date" @click="dateVisable = true" is-link />
-      <van-cell title="供应商" :value="curPartnerName" @click="partnerVisable = true" v-if="canShow" is-link />
+      <van-row>
+        <van-col span="14"> <van-cell title="送货日期" :value="date" @click="dateVisable = true" is-link /> </van-col>
+        <van-col span="10"> <van-cell title="时间段" :value="time" @click="timeVisable = true" is-link /> </van-col>
+      </van-row>
+      <van-row>
+        <van-col span="14">
+          <van-cell title="供应商" :value="curPartnerName" @click="partnerVisable = true" v-if="canShow" is-link />
+        </van-col>
+        <van-col span="10">
+          <van-cell title="模式" :value="model" @click="modelVisable = true" is-link />
+        </van-col>
+      </van-row>
+
       <div
         :style="{
           height: freshHeight + 'px',
@@ -17,36 +28,65 @@
         }"
       >
         <van-empty v-if="list.length <= 0" description="没有发现送货清单"></van-empty>
-        <table v-else border="0" cellspacing="0" style="width: 100%">
-          <tr style="text-align: center; background-color: #e6e6e6">
-            <th class="col" style="width: 8%; border-left: 1px solid #333">序</th>
-            <th class="col" style="width: 50%; border-left: 1px solid #333">商品名</th>
-            <th class="col" style="width: 12%; border-left: 1px solid #333">采购量</th>
-            <th class="col" style="width: 30%; border-left: 1px solid #333; border-right: 1px solid #333">明细</th>
-          </tr>
-          <tr v-for="(r, i) in list" :key="i" style="text-align: center">
-            <td style="text-align: center; width: 8%" class="col1">
-              {{ i + 1 }}
-            </td>
-            <td style="width: 50%" class="col1">
-              <span>
-                {{ r.invName + '(' + r.unitName + ')' }}
-              </span>
-              <br />
-              <span> 规格： {{ r.specification == '' ? '-' : r.specification }} </span>
-            </td>
-            <td style="width: 5%; text-align: right" class="col1">
-              <strong style="color: red">{{ r.sum }}</strong>
-            </td>
-            <td style="width: 37%; border-right: 1px solid #333" class="col1">
-              <ul>
-                <li style="padding: 3px" span="14" v-for="(rr, ii) in r.children" :key="ii">
-                  {{ '[' + rr.deptName + ']' }}<strong style="color: red">{{ '*' + Number(rr.qty).toFixed(2) }}</strong>
-                </li>
-              </ul>
-            </td>
-          </tr>
-        </table>
+        <div v-else>
+          <table v-if="modelId == 0" border="0" cellspacing="0" style="width: 100%">
+            <tr style="text-align: center; background-color: #e6e6e6">
+              <th class="col" style="width: 8%; border-left: 1px solid #333">序</th>
+              <th class="col" style="width: 50%; border-left: 1px solid #333">商品名</th>
+              <th class="col" style="width: 12%; border-left: 1px solid #333">采购量</th>
+              <th class="col" style="width: 30%; border-left: 1px solid #333; border-right: 1px solid #333">明细</th>
+            </tr>
+            <tr v-for="(r, i) in list" :key="i" style="text-align: center">
+              <td style="text-align: center; width: 8%" class="col1">
+                {{ i + 1 }}
+              </td>
+              <td style="width: 50%" class="col1">
+                <span>
+                  {{ r.invName + '(' + r.unitName + ')' }}
+                </span>
+                <br />
+                <span> 规格： {{ r.specification == '' ? '-' : r.specification }} </span>
+              </td>
+              <td style="width: 5%; text-align: right" class="col1">
+                <strong style="color: red">{{ r.sum }}</strong>
+              </td>
+              <td style="width: 37%; border-right: 1px solid #333" class="col1">
+                <ul>
+                  <li style="padding: 3px" span="14" v-for="(rr, ii) in r.children" :key="ii">
+                    {{ '[' + rr.deptName + ']'
+                    }}<strong style="color: red">{{ '*' + Number(rr.qty).toFixed(2) }}</strong>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+          <table v-if="modelId == 1" border="0" cellspacing="0" style="width: 100%">
+            <tr style="text-align: center; background-color: #e6e6e6">
+              <th class="col" style="width: 8%; border-left: 1px solid #333">序</th>
+              <th class="col" style="width: 50%; border-left: 1px solid #333">商品名</th>
+              <th class="col" style="width: 12%; border-left: 1px solid #333">采购量</th>
+              <th class="col" style="width: 30%; border-left: 1px solid #333; border-right: 1px solid #333">明细</th>
+            </tr>
+            <tr v-for="(r, i) in listCopy" :key="i" style="text-align: center">
+              <td style="text-align: center; width: 8%" class="col1">
+                {{ i + 1 }}
+              </td>
+              <td style="width: 50%" class="col1">
+                <span>
+                  {{ r.invName + '(' + r.unitName + ')' }}
+                </span>
+                <br />
+                <span> 规格： {{ r.specification == '' ? '-' : r.specification }} </span>
+              </td>
+              <td style="width: 5%; text-align: right" class="col1">
+                <strong style="color: red">{{ Number(r.qty).toFixed(2) }}</strong>
+              </td>
+              <td style="width: 37%; border-right: 1px solid #333; text-align: center" class="col1">
+                <strong>{{ r.deptName }}</strong>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
       <van-popup v-model="dateVisable" round position="bottom" :style="{ height: '40%' }">
         <van-datetime-picker
@@ -85,6 +125,24 @@
           </van-tab>
         </van-tabs>
       </van-popup>
+      <van-action-sheet
+        close-on-click-action
+        v-model="timeVisable"
+        :actions="actions"
+        @select="onSelect"
+        cancel-text="取消"
+        description="请选择时间段"
+        @cancel="timeVisable = false"
+      />
+      <van-action-sheet
+        close-on-click-action
+        v-model="modelVisable"
+        :actions="actions1"
+        @select="onSelect1"
+        cancel-text="取消"
+        description="请选择汇总模式"
+        @cancel="modelVisable = false"
+      />
     </div>
   </div>
 </template>
@@ -103,17 +161,33 @@ export default {
       active: 0,
       dateVisable: false,
       partnerVisable: false,
+      timeVisable: false,
+      modelVisable: false,
+
       finished: false,
 
       list: [],
+      listCopy: [],
       partners: [],
       partners_copy: [],
       freshHeight: '',
       date: dayjs(new Date()).format('YYYY-MM-DD'),
+      time: '白天',
+      model: '商品',
+      modelId: 0,
       curPartnerId: '',
       curPartnerName: '',
       currentDate: new Date(),
-      keyword: ''
+      flag: 0,
+      keyword: '',
+      actions: [
+        { id: 0, name: '白天' },
+        { id: 1, name: '晚上' }
+      ],
+      actions1: [
+        { id: 0, name: '商品' },
+        { id: 1, name: '部门' }
+      ]
     }
   },
   computed: {
@@ -129,12 +203,15 @@ export default {
       this.getList()
     },
     getList() {
-      getDayList({ date: this.date, partnerId: this.curPartnerId })
+      getDayList({ date: this.date, partnerId: this.curPartnerId, flag: this.flag })
         .then(({ code, data, message }) => {
           if (code == 200) {
             if (data.length <= 0) {
               this.$toast({ type: 'fail', message: '未能查询到数据!' })
             }
+            this.listCopy = data.sort((a, b) => {
+              return a.deptId - b.deptId
+            })
             let invs = Array.from(new Set(data.map(f => f.invId)))
 
             invs = invs.map(f => {
@@ -195,12 +272,23 @@ export default {
       this.partnerVisable = false
 
       this.getList()
+    },
+    onSelect({ id, name }) {
+      this.timeVisable = false
+      this.time = name
+      this.flag = id
+      this.getList();
+    },
+    onSelect1({ id, name }) {
+      this.modelVisable = false
+      this.model = name
+      this.modelId = id
     }
   },
   mounted() {
     this.curPartnerId = this.partnerId
     this.curPartnerName = this.partnerName == '未分配' ? '' : this.partnerName
-    this.freshHeight = document.documentElement.clientHeight - 150
+    this.freshHeight = document.documentElement.clientHeight - 50 * 3
     getPartners().then(({ code, data, message }) => {
       if (code == 200) {
         this.partners = data.map(m => {

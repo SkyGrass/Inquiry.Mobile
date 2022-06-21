@@ -7,8 +7,12 @@
         'box-sizing': 'border-box'
       }"
     >
-      <van-cell title="申购日期" :value="date" @click="dateVisable = true" is-link />
-
+      <van-row>
+        <van-col span="14"> <van-cell title="申购日期" :value="date" @click="dateVisable = true" is-link /> </van-col>
+        <van-col span="10">
+          <van-cell title="部门" :value="curDeptName" @click="deptVisable = true" is-link />
+        </van-col>
+      </van-row>
       <div
         :style="{
           height: freshHeight + 'px',
@@ -57,28 +61,66 @@
           title="选择年月日"
         />
       </van-popup>
+      <van-popup v-model="deptVisable" safe-area-inset-bottom round position="bottom" :style="{ height: '80%' }">
+        <van-tabs v-model="active">
+          <van-tab title="部门列表">
+            <van-search
+              v-model="keyword"
+              placeholder="请输入搜索关键词"
+              show-action
+              @blur="onSearchBlur"
+              @input="onSearchBlur"
+              @search="onSearch"
+              @cancel="partnerVisable = false"
+            />
+            <van-list :finished="finished" finished-text="没有更多了">
+              <van-cell v-for="item in depts" :key="item.id" :title="item.name">
+                <template>
+                  <van-button
+                    :disabled="item.isChoose"
+                    @click="onClickChoose(item)"
+                    :type="item.isChoose ? '' : 'primary'"
+                    size="small"
+                    >选取</van-button
+                  >
+                </template>
+              </van-cell>
+            </van-list>
+          </van-tab>
+        </van-tabs>
+      </van-popup>
     </div>
   </div>
 </template>
 <script>
 import { mounted } from '@/mix/mounted.js'
 import { getSubDayList } from '@/api/rpt.js'
+import { getDepts } from '@/api/home.js'
 import dayjs from 'dayjs'
+import { mapGetters } from 'vuex'
 export default {
   name: `p91`,
   mixins: [mounted],
   data() {
     return {
       dateVisable: false,
+      deptVisable: false,
       finished: false,
 
+      active: 0,
       list: [],
       freshHeight: '',
+      depts: [],
+      depts_copy: [],
+
+      curDeptId: '',
+      curDeptName: '',
+      keyword: '',
       date: dayjs(new Date()).format('YYYY-MM-DD'),
       currentDate: new Date()
     }
   },
-  computed: {},
+  computed: { ...mapGetters(['deptId', 'deptName']) },
   methods: {
     confirmDate() {
       this.date = dayjs(this.currentDate).format('YYYY-MM-DD')
@@ -86,7 +128,7 @@ export default {
       this.getList()
     },
     getList() {
-      getSubDayList({ date: this.date })
+      getSubDayList({ date: this.date, deptId: this.curDeptId })
         .then(({ code, data, message }) => {
           if (code == 200) {
             if (data.length <= 0) {
@@ -104,11 +146,54 @@ export default {
         .catch(() => {
           this.isLoading = false
         })
+    },
+    onSearchBlur() {
+      this.onSearch(this.keyword)
+    },
+    onSearch(val) {
+      this.depts = this.depts_copy.filter(
+        f => f.chinaname.indexOf(val.toUpperCase()) > -1 || f.name.indexOf(val) > -1 || f.code.indexOf(val) > -1
+      )
+    },
+    onClickChoose(depts) {
+      const { id, name } = depts
+      const index = this.depts.findIndex(f => f.id == id)
+
+      this.curDeptId = id
+      this.curDeptName = name
+
+      this.depts.forEach((p, i) => {
+        p.isChoose = i == index
+        this.$set(this.depts, i, p)
+      })
+      this.depts_copy.forEach((p, i) => {
+        p.isChoose = p.id == id
+        this.$set(this.depts_copy, i, p)
+      })
+      this.deptVisable = false
+
+      this.getList()
     }
   },
   mounted() {
-    this.freshHeight = document.documentElement.clientHeight - 100
-    this.getList()
+    this.curDeptId = this.deptId
+    this.curDeptName = this.deptName == '未分配' ? '' : this.deptName
+
+    this.freshHeight = document.documentElement.clientHeight - 50 * 2
+
+    getDepts().then(({ code, data, message }) => {
+      if (code == 200) {
+        this.depts = data.map(m => {
+          return m
+        })
+        this.depts_copy = data.map(m => {
+          return m
+        })
+      }
+    })
+    if (this.curDeptId != '-1') {
+      this.getList()
+    }
   }
 }
 </script>
